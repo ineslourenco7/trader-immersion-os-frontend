@@ -1,0 +1,115 @@
+{
+  "asset": "XAU/USD",
+  "mode": "paper",
+  "target_return_30d": 0.1,
+  "max_drawdown": 0.15,
+  "min_sharpe": 1.2,
+  "reflection_every": 5,
+  "strategy": {
+    "version": "01",
+    "entry": {
+      "indicator": "rsi",
+      "threshold": 30,
+      "direction": "long"
+    },
+    "stop_loss_pct": 2.0,
+    "position_size_r": 0.5
+  },
+  "worker_status": "ok",
+  "last_price": 3352.85,
+  "trade_count": 30,
+  "win_rate": 0.5333,
+  "total_pnl_pct": 0.04256,
+  "recent_trades": [
+    {
+      "timestamp": "2026-06-05T18:50:05.688773+00:00",
+      "asset": "XAU/USD",
+      "mode": "paper",
+      "side": "buy",
+      "entry_price": 3348.45,
+      "exit_price": 3319.9882,
+      "pnl_pct": -0.0085,
+      "strategy_version": "01",
+      "reason": "paper RSI threshold 30.0"
+    },
+    {
+      "timestamp": "2026-06-05T18:55:06.740239+00:00",
+      "asset": "XAU/USD",
+      "mode": "paper",
+      "side": "buy",
+      "entry_price": 3355.94,
+      "exit_price": 3328.0857,
+      "pnl_pct": -0.0083,
+      "strategy_version": "01",
+      "reason": "paper RSI threshold 30.0"
+    },
+    {
+      "timestamp": "2026-06-05T19:00:10.038340+00:00",
+      "asset": "XAU/USD",
+      "mode": "paper",
+      "side": "buy",
+      "entry_price": 4481.565,
+      "exit_price": 4531.6241,
+      "pnl_pct": 0.01117,
+      "strategy_version": "01",
+      "reason": "paper RSI threshold 30.0"
+    },
+    {
+      "timestamp": "2026-06-05T19:05:12.322801+00:00",
+      "asset": "XAU/USD",
+      "mode": "paper",
+      "side": "buy",
+      "entry_price": 3346.46,
+      "exit_price": 3331.7021,
+      "pnl_pct": -0.00441,
+      "strategy_version": "01",
+      "reason": "paper RSI threshold 30.0"
+    },
+    {
+      "timestamp": "2026-06-05T19:10:14.919276+00:00",
+      "asset": "XAU/USD",
+      "mode": "paper",
+      "side": "buy",
+      "entry_price": 3373.1,
+      "exit_price": 3404.5373,
+      "pnl_pct": 0.00932,
+      "strategy_version": "01",
+      "reason": "paper RSI threshold 30.0"
+    },
+    {
+      "timestamp": "2026-06-05T19:15:15.478914+00:00",
+      "asset": "XAU/USD",
+      "mode": "paper",
+      "side": "buy",
+      "entry_price": 3345.86,
+      "exit_price": 3360.8495,
+      "pnl_pct": 0.00448,
+      "strategy_version": "01",
+      "reason": "paper RSI threshold 30.0"
+    },
+    {
+      "timestamp": "2026-06-05T19:20:15.965213+00:00",
+      "asset": "XAU/USD",
+      "mode": "paper",
+      "side": "buy",
+      "entry_price": 4481.565,
+      "exit_price": 4460.7257,
+      "pnl_pct": -0.00465,
+      "strategy_version": "01",
+      "reason": "paper RSI threshold 30.0"
+    },
+    {
+      "timestamp": "2026-06-05T19:25:16.857021+00:00",
+      "asset": "XAU/USD",
+      "mode": "paper",
+      "side": "buy",
+      "entry_price": 3352.85,
+      "exit_price": 3346.4796,
+      "pnl_pct": -0.0019,
+      "strategy_version": "01",
+      "reason": "paper RSI threshold 30.0"
+    }
+  ],
+  "product_stage": "concept-to-prototype",
+  "safety": "paper-first / no real capital / no live APIs without approval"
+}
