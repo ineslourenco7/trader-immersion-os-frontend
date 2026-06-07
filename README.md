@@ -1,6 +1,6 @@
-# Trader Immersion OS v3
+# Trading Room
 
-SPA multipágina/PWA para AlphaForge: Dashboard, Session Room, Trader Twin, Coach, Regime AI, Capital, Marketplace e Journal.
+SPA multipágina/PWA paper-first. AlphaForge é o motor interno do Trading Room: Dashboard, Session Room, Trader Twin, AlphaForge Engine, Coach, Regime AI, Capital, Marketplace e Journal.
 
 ## URLs
 

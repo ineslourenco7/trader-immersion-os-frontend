@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+*.pyo
+node_modules/
+.env
+.env.*
+*.db
+trader-room.db
+data/
+*.tar.gz
+*.log
+.DS_Store
+Thumbs.db

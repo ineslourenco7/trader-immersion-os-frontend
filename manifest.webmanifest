@@ -1,6 +1,6 @@
 {
-  "name": "Trader Immersion OS",
-  "short_name": "TIO",
+  "name": "Trading Room",
+  "short_name": "Room",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#000000",

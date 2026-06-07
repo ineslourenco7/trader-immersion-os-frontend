@@ -1,1 +1,318 @@
-<!doctype html><html lang="pt"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Trader Immersion OS v4 API</title><meta name="theme-color" content="#03040a"><link rel="manifest" href="manifest.webmanifest"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"><link rel="stylesheet" href="assets/app.css"></head><body><div class="app"><aside class="sidebar"><div class="brand"><div class="logo"></div><div><b>Trader Immersion OS</b><span>AlphaForge · API viva</span></div></div><nav class="nav"><a href="#dashboard" data-route="dashboard">Dashboard <small>01</small></a><a href="#session" data-route="session">Session <small>02</small></a><a href="#coach" data-route="coach">Coach <small>03</small></a><a href="#regime" data-route="regime">Regime AI <small>04</small></a><a href="#capital" data-route="capital">Capital <small>05</small></a><a href="#marketplace" data-route="marketplace">Marketplace <small>06</small></a><a href="#journal" data-route="journal">Journal <small>07</small></a></nav><div class="sidecard"><b>Paper-first</b><p>Sem capital real. Sem live APIs. Sem execução automática sem aprovação explícita.</p></div></aside><main class="main"><header class="top"><div><div class="kicker">Trader workspace · criado para muitos</div><h1 class="title" id="pageTitle">Dashboard vivo</h1><p class="subtitle" id="pageSub">A visão central do trader.</p></div><div class="pill"><span class="dot"></span><span id="assetPill">XAU/USD</span><span class="routehint">paper</span></div></header><section id="page-dashboard" class="page active"><div class="grid"><div class="card span3" style="--accent:var(--cyan)"><div class="label">Trades</div><div class="value" id="metricTrades">--</div><div class="mini">paper logs</div></div><div class="card span3" style="--accent:var(--mint)"><div class="label">Win rate</div><div class="value ok" id="metricWinrate">--</div><div class="mini">amostra atual</div></div><div class="card span3" style="--accent:var(--violet)"><div class="label">PnL total</div><div class="value" id="metricPnl">--</div><div class="mini">paper only</div></div><div class="card span3" style="--accent:var(--red)"><div class="label">Drawdown</div><div class="value bad" id="metricDD">--</div><div class="mini">cumulativo</div></div><div class="card span8" style="--accent:var(--cyan)"><h2 class="sectionTitle">Live paper surface</h2><div class="heroChart"><svg viewBox="0 0 900 300" preserveAspectRatio="none"><path d="M0 180 C80 120 150 210 230 145 S370 70 455 128 600 240 700 120 820 80 900 112" fill="none" stroke="rgba(40,213,255,.9)" stroke-width="4"/><path d="M0 210 C120 230 180 105 270 150 S420 235 525 172 700 60 900 185" fill="none" stroke="rgba(45,255,157,.72)" stroke-width="3"/><path d="M0 98 C155 78 210 175 320 108 S510 50 635 118 760 176 900 138" fill="none" stroke="rgba(124,92,255,.82)" stroke-width="3"/></svg></div></div><div class="card span4" style="--accent:var(--violet)"><h2 class="sectionTitle">Estratégia ativa</h2><pre class="mono mini" id="strategyJson"></pre></div><div class="card span12" style="--accent:var(--mint)"><h2 class="sectionTitle">Trades recentes</h2><div class="stack" id="recentTrades"></div></div></div></section><section id="page-session" class="page"><div class="grid"><div class="card span5" style="--accent:var(--violet)"><div class="label">Trader Twin</div><div class="value vio" id="twinProfile">--</div><p class="mini" id="twinThesis">A carregar perfil...</p><div class="twinOrb"><span></span><span></span><span></span></div></div><div class="card span7" style="--accent:var(--cyan)"><h2 class="sectionTitle">Trading Session Mode</h2><p class="subtitle" style="margin-top:0">Antes de operar, a sala confirma o trader, o mercado, o risco e a estratégia. Se algo falhar, a melhor decisão pode ser não operar.</p><div class="sessionStatus" id="sessionStatus"><span class="dot"></span><b>Pronto para check-in</b><small>paper-first</small></div></div><div class="card span4" style="--accent:var(--mint)"><h2 class="sectionTitle">1. Check mental</h2><div class="control"><label>Estado agora</label><select id="mentalState"><option value="calmo">Calmo / focado</option><option value="normal">Normal</option><option value="ansioso">Ansioso</option><option value="revenge">Quero recuperar loss</option></select></div><div class="control"><label>Losses hoje</label><input id="lossesToday" type="number" min="0" max="10" value="0"></div></div><div class="card span4" style="--accent:var(--cyan)"><h2 class="sectionTitle">2. Contexto</h2><div class="row"><span>Regime</span><b class="cyan" id="sessionRegime">--</b></div><div class="row"><span>Confiança</span><b id="sessionRegimeConf">--</b></div><div class="row"><span>EMA 34</span><b class="ok">obrigatória</b></div></div><div class="card span4" style="--accent:var(--amber)"><h2 class="sectionTitle">3. Risco permitido</h2><div class="row"><span>Budget hoje</span><b class="amb" id="sessionRiskBudget">--</b></div><div class="row"><span>Capital real</span><b class="bad">OFF</b></div><div class="row"><span>Modo</span><b class="ok">paper</b></div></div><div class="card span7" style="--accent:var(--mint)"><h2 class="sectionTitle">Checklist de entrada</h2><div class="checklist" id="sessionChecklist"><label><input type="checkbox" data-check="mental"> Estou mentalmente apto para operar</label><label><input type="checkbox" data-check="regime"> Regime atual combina com a estratégia</label><label><input type="checkbox" data-check="risk"> Aceito o limite de risco do dia</label><label><input type="checkbox" data-check="stop"> Tenho regra clara para parar</label><label><input type="checkbox" data-check="journal"> Vou fechar a sessão com reflexão</label></div><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px"><button class="btn primary" onclick="startTradingSession()">Iniciar sessão paper</button><button class="btn" onclick="endTradingSession()">Fechar sessão</button></div></div><div class="card span5" style="--accent:var(--red)"><h2 class="sectionTitle">Decisão da sala</h2><div class="decision" id="sessionDecision"><strong>Aguardar check-in</strong><span>Completa o checklist para receber permissão operacional.</span></div><div class="stack" id="twinRules" style="margin-top:14px"></div></div><div class="card span12" style="--accent:var(--violet)"><h2 class="sectionTitle">Histórico persistente de sessões</h2><div id="sessionHistory"><p class="mini">Sem sessões locais ainda.</p></div></div></div></section><section id="page-coach" class="page"><div class="grid"><div class="card span4" style="--accent:var(--mint)"><div class="label">Estado mental</div><div class="value ok" id="coachState">--</div><div class="mini">coach layer</div></div><div class="card span4" style="--accent:var(--red)"><div class="label">Revenge risk</div><div class="value bad" id="revengeRisk">--</div><div class="mini">bloqueio suave se subir</div></div><div class="card span4" style="--accent:var(--amber)"><div class="label">Próxima ação</div><div class="value amb">Respirar</div><div class="mini">60 segundos antes do trade</div></div><div class="card span12" style="--accent:var(--cyan)"><h2 class="sectionTitle">Regras pessoais de proteção</h2><div id="coachRules"></div></div></div></section><section id="page-regime" class="page"><div class="grid"><div class="card span5" style="--accent:var(--cyan)"><div class="label">Regime atual</div><div class="value cyan" id="regimeName">--</div><div class="mini">confiança: <span id="regimeConf">--</span></div><div id="regimeDrivers" style="margin-top:16px"></div></div><div class="card span7" style="--accent:var(--mint)"><h2 class="sectionTitle">Estratégias permitidas</h2><div id="allowedStrategies"></div><h2 class="sectionTitle" style="margin-top:18px">Estratégias bloqueadas</h2><div id="blockedStrategies"></div></div></div></section><section id="page-capital" class="page"><div class="grid"><div class="card span4" style="--accent:var(--amber)"><div class="label">Budget de risco hoje</div><div class="value amb" id="riskBudget">--</div><div class="mini">paper sizing</div></div><div class="card span4" style="--accent:var(--red)"><div class="label">Capital real</div><div class="value bad" id="liveCapital">OFF</div><div class="mini">bloqueado por default</div></div><div class="card span4" style="--accent:var(--mint)"><div class="label">Recomendação</div><div class="value ok">Paper</div><div class="mini">validar antes de escalar</div></div><div class="card span12" style="--accent:var(--violet)"><h2 class="sectionTitle">Policy gates</h2><div class="row"><span>Executar trades reais</span><b class="bad">exige aprovação</b></div><div class="row"><span>Ligar broker/exchange API</span><b class="bad">exige aprovação</b></div><div class="row"><span>Aumentar risco</span><b class="amb">só com evidência</b></div><div class="row"><span>Ciclo de melhoria</span><b class="ok">1 variável</b></div></div></div></section><section id="page-marketplace" class="page"><div class="grid"><div class="card span12" style="--accent:var(--violet)"><h2 class="sectionTitle">Estratégias auditáveis</h2><div class="stack" id="marketRows"></div></div></div></section><section id="page-journal" class="page"><div class="grid"><div class="card span6" style="--accent:var(--cyan)"><h2 class="sectionTitle">Escrever reflexão</h2><textarea class="journal" id="journalText" placeholder="O que senti antes do trade? O setup era A+? Que regra quase quebrei?"></textarea><div style="margin-top:12px"><button class="btn primary" onclick="saveJournal()">Guardar no Trader Twin</button></div></div><div class="card span6" style="--accent:var(--mint)"><h2 class="sectionTitle">Notas persistentes do Trader Twin</h2><div id="journalEntries"></div></div></div></section></main></div><nav class="mobilebar"><a href="#dashboard" data-route="dashboard">Painel</a><a href="#session" data-route="session">Sessão</a><a href="#coach" data-route="coach">Coach</a><a href="#regime" data-route="regime">Regime</a><a href="#capital" data-route="capital">Risco</a><a href="#journal" data-route="journal">Journal</a></nav><script src="assets/app.js"></script></body></html>
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Trading Room</title>
+  <meta name="theme-color" content="#03040a">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/app.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand"><div class="logo"></div><div><b>Trading Room</b><span>AlphaForge engine interno</span></div></div>
+      <button id="collapseSidebarBtn" aria-label="Recolher menu" title="Recolher/expandir menu" onclick="toggleSidebar()">Recolher</button>
+      <nav class="nav">
+        <details class="nav-cat" open>
+          <summary>Operacoes</summary>
+          <div class="nav-sub">
+            <a class="nav-link" href="#connect"><span>🔌 Connect</span><small class="mini">contas</small></a>
+            <a class="nav-link" href="#session"><span>⚡ Sessao</span><small class="mini">rotina</small></a>
+            <a class="nav-link" href="#gps"><span>◉ GPS</span><small class="mini">setup</small></a>
+            <a class="nav-link" href="#copilot"><span>♙ Copilot</span><small class="mini">checklist</small></a>
+            <a class="nav-link" href="#marketplace"><span>▤ Marketplace</span><small class="mini">estratégias</small></a>
+          </div>
+        </details>
+        <details class="nav-cat">
+          <summary>Mercado</summary>
+          <div class="nav-sub">
+            <a class="nav-link" href="#regime"><span>◈ Regime</span><small class="mini">contexto</small></a>
+            <a class="nav-link" href="#capital"><span>◉ Capital</span><small class="mini">risco</small></a>
+            <a class="nav-link" href="#engine"><span>⚙ Engine</span><small class="mini">motor</small></a>
+          </div>
+        </details>
+        <details class="nav-cat">
+          <summary>Estatística</summary>
+          <div class="nav-sub">
+            <a class="nav-link" href="#quantfund"><span>▥ QuantFund</span><small class="mini">métricas</small></a>
+            <a class="nav-link" href="#profile"><span>👤 Perfil</span><small class="mini">conta</small></a>
+          </div>
+        </details>
+        <details class="nav-cat">
+          <summary>Diário</summary>
+          <div class="nav-sub">
+            <a class="nav-link" href="#journal"><span>✎ Journal</span><small class="mini">reflexão</small></a>
+            <a class="nav-link" href="#coach"><span>♡ Coach</span><small class="mini">Twin</small></a>
+          </div>
+        </details>
+        <a class="nav-link" href="#ideas"><span>✦ IDEAS</span><small class="mini">roadmap</small></a>
+      </nav>
+      <div class="sidecard"><b>Paper-first</b><p>O foco é proteger o teu capital: primeiro treino, métricas e disciplina — só avanças quando estiveres pronta.</p></div>
+      <button id="collapseSidebarBtn" aria-label="Recolher menu" title="Recolher/expandir menu">Recolher</button>
+
+    </aside>
+
+    <main class="main">
+      <header class="top">
+        <div style="display:flex;gap:10px;align-items:center">
+          <button id="menuToggle" aria-label="Mostrar menu" style="padding:8px 10px">☰</button>
+          <div>
+            <div class="kicker">Trading Room · cockpit paper-first</div>
+            <h1 class="title" id="pageTitle">Painel</h1>
+            <p class="subtitle" id="pageSub">Visão central.</p>
+          </div>
+        </div>
+        <div class="pill"><span class="dot"></span><span id="assetPill">XAU/USD</span><span class="routehint" id="routeHint">paper</span></div>
+      </header>
+
+      <section id="page-dashboard" class="page">
+        <div class="stack">
+          <div class="card span12" style="padding:0">
+            <div class="tradingview-widget-container" style="height:520px">
+              <div id="tradingview_widget" style="height:100%"></div>
+            </div>
+          </div>
+          <div class="grid">
+            <div class="card span4"><div class="label">Estado</div><div class="value ok" id="metricTrades">--</div></div>
+            <div class="card span4"><div class="label">Win rate</div><div class="value amb" id="metricWinrate">--</div></div>
+            <div class="card span4"><div class="label">PnL</div><div class="value" id="metricPnl">--</div></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="page-connect" class="page"><div class="grid"><div class="card"><h2>Connect</h2><p>Em breve: iPhone, importação e MT5 automático.</p></div></div></section>
+      <section id="page-session" class="page"><div class="grid"><div class="card"><h2>Session</h2><p>Em breve.</p></div></div></section>
+      <section id="page-engine" class="page"><div class="grid"><div class="card"><h2>Engine</h2><p>Em breve.</p></div></div></section>
+
+      <section id="page-gps" class="page"><div class="grid"><div class="card span12"><h2 class="sectionTitle">Trading GPS</h2><div class="metricbar"><div><small>Nota</small><b id="gpsScore">--</b></div><div><small>Veredicto</small><b class="amb" id="gpsVerdict">--</b></div><div><small>Bloqueado</small><b id="gpsBlocked">--</b></div><div><small>Regime</small><b class="cyan" id="gpsRegime">--</b></div></div><div class="grid"><div class="card span6"><div class="control"><label>Símbolo</label><input id="gpsSymbol" value="XAUUSD"></div><div class="control"><label>Direção</label><select id="gpsDirection"><option value="buy">Buy</option><option value="sell">Sell</option></select></div><div class="control"><label>Motivo</label><textarea id="gpsReason" rows="4" placeholder="Ex: rejeição de liquidez + EMA 34"></textarea></div><div class="control"><label>Risco emocional</label><select id="gpsSessionRisk"><option value="0.38">Normal</option><option value="0.65">Ansioso</option><option value="0.88">Revenge</option></select></div><button class="btn primary" onclick="runGps()">Avaliar</button></div><div class="card span6"><h2 class="sectionTitle">Drivers</h2><div id="gpsDrivers"><p class="mini">Sem leituras.</p></div><p class="mini" id="gpsGuidance">Usa a nota como filtro.</p></div></div><div id="gpsHistory"></div></div></section>
+
+      <section id="page-copilot" class="page">
+        <div class="grid">
+          <div class="card span12">
+            <h2 class="sectionTitle">Trading Copilot</h2>
+            <div class="metricbar">
+              <div><small>Decisão</small><b id="copilotDecision">--</b></div>
+              <div><small>Regras</small><b id="copilotRulesPass">--</b></div>
+              <div><small>Trader risk</small><b class="bad" id="copilotRisk">--</b></div>
+              <div><small>RR</small><b class="amb" id="copilotRR">--</b></div>
+            </div>
+            <div class="grid">
+              <div class="card span6">
+                <h2 class="sectionTitle">Ver trade</h2>
+                <div class="control"><label>Símbolo</label><input id="copilotSymbol" value="XAUUSD"></div>
+                <div class="control"><label>Direção</label><select id="copilotDirection"><option value="buy">Buy</option><option value="sell">Sell</option></select></div>
+                <div class="control"><label>Lote</label><input id="copilotLot" type="number" step="0.01" value="0.01"></div>
+                <div class="control"><label>RR</label><input id="copilotRRInput" type="number" step="0.1" value="1.6"></div>
+                <label class="checkline"><input type="checkbox" id="copilotTrend"> Tendência</label>
+                <label class="checkline"><input type="checkbox" id="copilotLiquidity"> Liquidez</label>
+                <label class="checkline"><input type="checkbox" id="copilotStructure"> Estrutura</label>
+                <label class="checkline"><input type="checkbox" id="copilotNews"> Notícias</label>
+                <label class="checkline"><input type="checkbox" id="copilotRiskOk"> Risco OK</label>
+                <button class="btn primary" onclick="runCopilot()">Validar</button>
+              </div>
+              <div class="card span6"><h2 class="sectionTitle">Output</h2><div id="copilotOutput"><p class="mini">Sem cheques.</p></div></div>
+            </div>
+            <div id="copilotHistory"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="page-coach" class="page">
+        <div class="grid">
+          <div class="card span4"><div class="label">Estado mental</div><div class="value ok" id="coachState">--</div></div>
+          <div class="card span4"><div class="label">Revenge risk</div><div class="value bad" id="revengeRisk">--</div></div>
+          <div class="card span4"><div class="label">Ação</div><div class="value amb">Respirar</div></div>
+          <div class="card span12">
+            <h2 class="sectionTitle">Psicologia do trader</h2>
+            <div id="coachRules"></div>
+            <button class="btn primary" onclick="runPsychology()" style="margin-top:12px">Atualizar análise psicológica</button>
+            <div id="psychologyOutput" class="stack" style="margin-top:14px"></div>
+            <div id="psychologyHistory" class="stack" style="margin-top:18px"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="page-regime" class="page">
+        <div class="grid">
+          <div class="card span12">
+            <h2 class="sectionTitle">Market Regime AI</h2>
+            <div class="metricbar">
+              <div><small>Regime</small><b id="regimeName2" class="cyan">--</b></div>
+              <div><small>Confiança</small><b id="regimeConf2">--</b></div>
+            </div>
+            <div class="grid">
+              <div class="card span6">
+                <h2 class="sectionTitle">Drivers</h2>
+                <div id="regimeDrivers"><p class="mini">Sem drivers.</p></div>
+              </div>
+              <div class="card span6">
+                <h2 class="sectionTitle">Estratégias</h2>
+                <div id="regimeAllowed"><p class="mini">--</p></div>
+                <div id="regimeBlocked" style="margin-top:10px"><p class="mini">--</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="page-capital" class="page">
+        <div class="grid">
+          <div class="card span12">
+            <h2 class="sectionTitle">Capital Allocation AI</h2>
+            <div class="metricbar">
+              <div><small>Risco hoje</small><b id="capitalRiskToday">--</b></div>
+              <div><small>Live capital</small><b id="capitalLive">--</b></div>
+              <div><small>Modo</small><b id="capitalMode">--</b></div>
+            </div>
+            <div id="capitalGuards" class="stack"><p class="mini">Sem guards.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="page-marketplace" class="page">
+        <div class="grid">
+          <div class="card span12">
+            <h2 class="sectionTitle">Marketplace auditável</h2>
+            <p class="subtitle" style="margin-top:0">Estratégias com histórico, regime score, drawdown e trust — sem gurus sem provas.</p>
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px;">
+              <button class="btn primary" onclick="refreshMarketplace()">Recarregar marketplace</button>
+              <button class="btn" onclick="addDemoMarketplaceStrategy()">Adicionar estratégia demo</button>
+            </div>
+            <div class="stack" id="marketRows"><p class="mini">A carregar estratégias auditáveis...</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="page-quantfund" class="page">
+        <div class="grid">
+          <div class="card span12">
+            <h2 class="sectionTitle">QuantFund AI</h2>
+            <p class="subtitle" style="margin-top:0">Estatísticas do book paper e plano diário.</p>
+            <button class="btn primary" onclick="renderQuantFund()" style="margin-bottom:14px">Recarregar QuantFund AI</button>
+            <div id="quantfundSummary"><p class="mini">A calcular métricas...</p></div>
+            <div class="card span12" style="margin-top:14px">
+              <h2 class="sectionTitle">Evolução do capital (paper)</h2>
+              <canvas id="equityCanvas" height="220" style="width:100%"></canvas>
+            </div>
+            <div class="card span12" style="margin-top:14px">
+              <h2 class="sectionTitle">Edge Tracking</h2>
+              <div id="edgeTracking"><p class="mini">A carregar edge tracking...</p></div>
+            </div>
+          </div>
+          <div class="card span12">
+            <h2 class="sectionTitle">Plano diário</h2>
+            <div id="quantfundPlan"><p class="mini">Sem plano carregado.</p></div>
+          </div>
+          <div class="card span12">
+            <h2 class="sectionTitle">Histórico recente</h2>
+            <div id="quantfundHistory"><p class="mini">Sem atualizações.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="page-journal" class="page">
+    <div class="grid">
+      <div class="card span12">
+        <h2 class="sectionTitle">Journal & Reflexão</h2>
+        <p class="subtitle" style="margin-top:0">Escreve, guarda e transforma em padrões.</p>
+        <div class="grid">
+          <div class="card span6">
+            <div class="control">
+              <label>Reflexão</label>
+              <textarea id="journalText" rows="4" placeholder="Ex: entrei ansioso, fechei com disciplina..."></textarea>
+            </div>
+            <button class="btn primary" onclick="saveJournal()">Guardar reflexão</button>
+            <div id="journalInsights" class="stack" style="margin-top:14px"></div>
+          </div>
+          <div class="card span6">
+            <h2 class="sectionTitle">Histórico</h2>
+            <div id="journalEntries" class="stack"><p class="mini">Sem notas ainda.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="journalDailyReport" class="stack" style="margin-top:14px"></div>
+  </section>
+
+      <section id="page-profile" class="page">
+        <div class="grid">
+          <div class="card span12">
+            <h2 class="sectionTitle">Perfil individual</h2>
+            <p class="subtitle" style="margin-top:0">Histórico, métricas e regras pessoais do teu trading.</p>
+            <div class="grid">
+              <div class="card span6">
+                <h2 class="sectionTitle">Resumo</h2>
+                <div id="profileSummary"><p class="mini">Carregando perfil...</p></div>
+              </div>
+              <div class="card span6">
+                <h2 class="sectionTitle">Regras pessoais</h2>
+                <div id="profileRules"><p class="mini">Sem regras guardadas.</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="page-ideas" class="page">
+        <div class="grid">
+          <div class="card span12"><h2 class="sectionTitle">Funcionalidades</h2><div class="ideaGrid" id="ideaGrid"></div></div>
+        </div>
+      </section>
+    </main>
+
+    <nav class="mobilebar">
+      <a href="#dashboard" data-route="dashboard">⚡ Painel</a>
+      <details class="nav-cat">
+        <summary>Operacoes</summary>
+        <div class="nav-sub">
+          <a href="#session" data-route="session">⚡ Sessao</a>
+          <a href="#gps" data-route="gps">🔎 GPS</a>
+          <a href="#copilot" data-route="copilot">✅ Copilot</a>
+          <a href="#marketplace" data-route="marketplace">🏪 Marketplace</a>
+        </div>
+      </details>
+      <details class="nav-cat">
+        <summary>Estatistica</summary>
+        <div class="nav-sub">
+          <a href="#quantfund" data-route="quantfund">📈 QF</a>
+          <a href="#profile" data-route="profile">👤 Perfil</a>
+        </div>
+      </details>
+      <details class="nav-cat">
+        <summary>Diario</summary>
+        <div class="nav-sub">
+          <a href="#journal" data-route="journal">📝 Journal</a>
+          <a href="#coach" data-route="coach">🧠 Coach</a>
+        </div>
+      </details>
+      <a href="#ideas" data-route="ideas">💡 IDEAS</a>
+    </nav>
+  </div>
+
+  <script src="assets/app.js?v=spa-nav"></script>
+  <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+  <script type="text/javascript">
+    if (window.TradingView && window.TradingView.widget) {
+      new TradingView.widget({
+        "autosize": true,
+        "symbol": "OANDA:XAUUSD",
+        "interval": "60",
+        "timezone": "Etc/UTC",
+        "theme": "dark",
+        "style": "1",
+        "locale": "pt",
+        "toolbar_bg": "#0f1115",
+        "enable_publishing": false,
+        "hide_top_toolbar": false,
+        "hide_legend": false,
+        "save_image": false,
+        "container_id": "tradingview_widget"
+      });
+    }
+  </script>
+</body>
+</html>
