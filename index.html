@@ -13,308 +13,118 @@
 </head>
 <body>
   <div class="app">
-    <aside class="sidebar">
-      <div class="brand"><div class="logo"></div><div><b>Trading Room</b><span>AlphaForge engine interno</span></div></div>
-      <button id="collapseSidebarBtn" aria-label="Recolher menu" title="Recolher/expandir menu" onclick="toggleSidebar()">Recolher</button>
-      <nav class="nav">
-        <details class="nav-cat" open>
-          <summary>Operacoes</summary>
-          <div class="nav-sub">
-            <a class="nav-link" href="#connect"><span>🔌 Connect</span><small class="mini">contas</small></a>
-            <a class="nav-link" href="#session"><span>⚡ Sessao</span><small class="mini">rotina</small></a>
-            <a class="nav-link" href="#gps"><span>◉ GPS</span><small class="mini">setup</small></a>
-            <a class="nav-link" href="#copilot"><span>♙ Copilot</span><small class="mini">checklist</small></a>
-            <a class="nav-link" href="#marketplace"><span>▤ Marketplace</span><small class="mini">estratégias</small></a>
-          </div>
-        </details>
-        <details class="nav-cat">
-          <summary>Mercado</summary>
-          <div class="nav-sub">
-            <a class="nav-link" href="#regime"><span>◈ Regime</span><small class="mini">contexto</small></a>
-            <a class="nav-link" href="#capital"><span>◉ Capital</span><small class="mini">risco</small></a>
-            <a class="nav-link" href="#engine"><span>⚙ Engine</span><small class="mini">motor</small></a>
-          </div>
-        </details>
-        <details class="nav-cat">
-          <summary>Estatística</summary>
-          <div class="nav-sub">
-            <a class="nav-link" href="#visual"><span>📊 Análise visual</span><small class="mini">setups</small></a>
-            <a class="nav-link" href="#quantfund"><span>▥ QuantFund</span><small class="mini">métricas</small></a>
-            <a class="nav-link" href="#profile"><span>👤 Perfil</span><small class="mini">conta</small></a>
-          </div>
-        </details>
-        <details class="nav-cat">
-          <summary>Diário</summary>
-          <div class="nav-sub">
-            <a class="nav-link" href="#journal"><span>✎ Journal</span><small class="mini">reflexão</small></a>
-            <a class="nav-link" href="#coach"><span>♡ Coach</span><small class="mini">Twin</small></a>
-          </div>
-        </details>
-        <a class="nav-link" href="#ideas"><span>✦ IDEAS</span><small class="mini">roadmap</small></a>
-      </nav>
-      <div class="sidecard"><b>Paper-first</b><p>O foco é proteger o teu capital: primeiro treino, métricas e disciplina — só avanças quando estiveres pronta.</p></div>
-      <button id="collapseSidebarBtn" aria-label="Recolher menu" title="Recolher/expandir menu">Recolher</button>
+    <button id="menuToggle" class="menu-toggle" aria-label="Abrir menu">☰</button>
 
+    <aside class="sidebar" id="sidebar">
+      <div class="brand"><div class="logo"></div><div><b>Trading Room</b><span>Cockpit</span></div></div>
+      <nav class="nav">
+        <a class="nav-link active" href="#" data-route="dashboard"><span>Painel</span><small class="mini">Visão geral</small></a>
+        <a class="nav-link" href="#" data-route="connect"><span>Connect</span><small class="mini">Contas / ligações</small></a>
+        <a class="nav-link" href="#" data-route="session"><span>Sessão</span><small class="mini">Estado actual</small></a>
+        <a class="nav-link" href="#" data-route="gps"><span>GPS</span><small class="mini">Avaliação</small></a>
+        <a class="nav-link" href="#" data-route="copilot"><span>Copilot</span><small class="mini">Checklist</small></a>
+        <a class="nav-link" href="#" data-route="psychology"><span>Psicologia</span><small class="mini">Mindset</small></a>
+        <a class="nav-link" href="#" data-route="journal"><span>Journal</span><small class="mini">Reflexão</small></a>
+        <a class="nav-link" href="#" data-route="marketplace"><span>Marketplace</span><small class="mini">Estratégias</small></a>
+        <a class="nav-link" href="#" data-route="visual"><span>Visual</span><small class="mini">Análise gráfica</small></a>
+        <a class="nav-link" href="#" data-route="quantfund"><span>QuantFund</span><small class="mini">Métricas</small></a>
+        <a class="nav-link" href="#" data-route="engine"><span>AlphaForge</span><small class="mini">Motor</small></a>
+      </nav>
+      <div class="sidecard"><b>Paper-first</b><p>Modo treino. Sem risco real excepto se aprovares explicitamente.</p></div>
     </aside>
 
     <main class="main">
       <header class="top">
-        <div style="display:flex;gap:10px;align-items:center">
-          <button id="menuToggle" aria-label="Mostrar menu" style="padding:8px 10px">☰</button>
-          <div>
-            <div class="kicker">Trading Room · cockpit paper-first</div>
-            <h1 class="title" id="pageTitle">Painel</h1>
-            <p class="subtitle" id="pageSub">Visão central.</p>
-          </div>
+        <div>
+          <div class="kicker">Trading Room</div>
+          <h1 class="title" id="pageTitle">Painel</h1>
+          <p class="subtitle" id="pageSub">Cockpit unificado. Todos os widgets no mesmo ecrã.</p>
         </div>
         <div class="pill"><span class="dot"></span><span id="assetPill">XAU/USD</span><span class="routehint" id="routeHint">paper</span></div>
       </header>
 
-      <section id="page-dashboard" class="page">
-        <div class="stack">
-          <div class="card span12" style="padding:0">
-            <div class="tradingview-widget-container" style="height:520px">
-              <div id="tradingview_widget" style="height:100%"></div>
-            </div>
+      <section class="grid cockpit-grid">
+        <div class="card span12 chart"><div class="tradingview-widget-container" style="height:320px"><div id="tradingview_widget" style="height:100%"></div></div></div>
+
+        <div class="card span4"><div class="label">Estado</div><div class="value ok" id="metricTrades">--</div></div>
+        <div class="card span4"><div class="label">Win rate</div><div class="value amb" id="metricWinrate">--</div></div>
+        <div class="card span4"><div class="label">PnL</div><div class="value" id="metricPnl">--</div></div>
+
+        <div class="card span4"><div class="label">Contas</div><div class="stack" id="connectAccounts"><p class="mini">A carregar...</p></div></div>
+        <div class="card span4"><div class="label">Sessão</div><div class="stack" id="sessionPanel"><p class="mini">A carregar...</p></div></div>
+        <div class="card span4"><div class="label">Motor</div><div class="stack" id="enginePanel"><p class="mini">A carregar...</p></div></div>
+
+        <div class="card span6 copilot">
+          <div class="metricbar">
+            <div><small>Decisão</small><b id="copilotDecision">--</b></div>
+            <div><small>Regras</small><b id="copilotRulesPass">--</b></div>
+            <div><small>Trader risk</small><b class="bad" id="copilotRisk">--</b></div>
+            <div><small>RR</small><b class="amb" id="copilotRR">--</b></div>
           </div>
-          <div class="grid">
-            <div class="card span4"><div class="label">Estado</div><div class="value ok" id="metricTrades">--</div></div>
-            <div class="card span4"><div class="label">Win rate</div><div class="value amb" id="metricWinrate">--</div></div>
-            <div class="card span4"><div class="label">PnL</div><div class="value" id="metricPnl">--</div></div>
-          </div>
+          <label class="checkline"><input type="checkbox" id="copilotTrend"> Tendência</label>
+          <label class="checkline"><input type="checkbox" id="copilotLiquidity"> Liquidez</label>
+          <label class="checkline"><input type="checkbox" id="copilotStructure"> Estrutura</label>
+          <label class="checkline"><input type="checkbox" id="copilotNews"> Notícias</label>
+          <label class="checkline"><input type="checkbox" id="copilotRiskOk"> Risco OK</label>
+          <button class="btn primary" onclick="runCopilot()">Validar</button>
+          <div id="copilotOutput"><p class="mini">Sem cheques.</p></div>
         </div>
-      </section>
 
-      <section id="page-connect" class="page"><div class="grid"><div class="card"><h2>Connect</h2><p>Em breve: iPhone, importação e MT5 automático.</p></div></div></section>
-      <section id="page-session" class="page"><div class="grid"><div class="card"><h2>Session</h2><p>Em breve.</p></div></div></section>
-      <section id="page-engine" class="page"><div class="grid"><div class="card"><h2>Engine</h2><p>Em breve.</p></div></div></section>
-
-      <section id="page-gps" class="page"><div class="grid"><div class="card span12"><h2 class="sectionTitle">Trading GPS</h2><div class="metricbar"><div><small>Nota</small><b id="gpsScore">--</b></div><div><small>Veredicto</small><b class="amb" id="gpsVerdict">--</b></div><div><small>Bloqueado</small><b id="gpsBlocked">--</b></div><div><small>Regime</small><b class="cyan" id="gpsRegime">--</b></div></div><div class="grid"><div class="card span6"><div class="control"><label>Símbolo</label><input id="gpsSymbol" value="XAUUSD"></div><div class="control"><label>Direção</label><select id="gpsDirection"><option value="buy">Buy</option><option value="sell">Sell</option></select></div><div class="control"><label>Motivo</label><textarea id="gpsReason" rows="4" placeholder="Ex: rejeição de liquidez + EMA 34"></textarea></div><div class="control"><label>Risco emocional</label><select id="gpsSessionRisk"><option value="0.38">Normal</option><option value="0.65">Ansioso</option><option value="0.88">Revenge</option></select></div><button class="btn primary" onclick="runGps()">Avaliar</button></div><div class="card span6"><h2 class="sectionTitle">Drivers</h2><div id="gpsDrivers"><p class="mini">Sem leituras.</p></div><p class="mini" id="gpsGuidance">Usa a nota como filtro.</p></div></div><div id="gpsHistory"></div></div></section>
-
-      <section id="page-copilot" class="page">
-        <div class="grid">
-          <div class="card span12">
-            <h2 class="sectionTitle">Trading Copilot</h2>
-            <div class="metricbar">
-              <div><small>Decisão</small><b id="copilotDecision">--</b></div>
-              <div><small>Regras</small><b id="copilotRulesPass">--</b></div>
-              <div><small>Trader risk</small><b class="bad" id="copilotRisk">--</b></div>
-              <div><small>RR</small><b class="amb" id="copilotRR">--</b></div>
-            </div>
-            <div class="grid">
-              <div class="card span6">
-                <h2 class="sectionTitle">Ver trade</h2>
-                <div class="control"><label>Símbolo</label><input id="copilotSymbol" value="XAUUSD"></div>
-                <div class="control"><label>Direção</label><select id="copilotDirection"><option value="buy">Buy</option><option value="sell">Sell</option></select></div>
-                <div class="control"><label>Lote</label><input id="copilotLot" type="number" step="0.01" value="0.01"></div>
-                <div class="control"><label>RR</label><input id="copilotRRInput" type="number" step="0.1" value="1.6"></div>
-                <label class="checkline"><input type="checkbox" id="copilotTrend"> Tendência</label>
-                <label class="checkline"><input type="checkbox" id="copilotLiquidity"> Liquidez</label>
-                <label class="checkline"><input type="checkbox" id="copilotStructure"> Estrutura</label>
-                <label class="checkline"><input type="checkbox" id="copilotNews"> Notícias</label>
-                <label class="checkline"><input type="checkbox" id="copilotRiskOk"> Risco OK</label>
-                <button class="btn primary" onclick="runCopilot()">Validar</button>
-              </div>
-              <div class="card span6"><h2 class="sectionTitle">Output</h2><div id="copilotOutput"><p class="mini">Sem cheques.</p></div></div>
-            </div>
-            <div id="copilotHistory"></div>
+        <div class="card span6">
+          <div class="metricbar">
+            <div><small>Nota</small><b id="gpsScore">--</b></div>
+            <div><small>Veredicto</small><b class="amb" id="gpsVerdict">--</b></div>
+            <div><small>Bloqueado</small><b id="gpsBlocked">--</b></div>
+            <div><small>Regime</small><b class="cyan" id="gpsRegime">--</b></div>
           </div>
+          <div class="control"><label>Motivo</label><textarea id="gpsReason" rows="2" placeholder="Ex: rejeição de liquidez + EMA 34"></textarea></div>
+          <button class="btn primary" onclick="runGps()">Avaliar GPS</button>
+          <div id="gpsHistory"></div>
         </div>
-      </section>
 
-      <section id="page-coach" class="page">
-        <div class="grid">
-          <div class="card span4"><div class="label">Estado mental</div><div class="value ok" id="coachState">--</div></div>
-          <div class="card span4"><div class="label">Revenge risk</div><div class="value bad" id="revengeRisk">--</div></div>
-          <div class="card span4"><div class="label">Ação</div><div class="value amb">Respirar</div></div>
-          <div class="card span12">
-            <h2 class="sectionTitle">Psicologia do trader</h2>
-            <div id="coachRules"></div>
-            <button class="btn primary" onclick="runPsychology()" style="margin-top:12px">Atualizar análise psicológica</button>
-            <div id="psychologyOutput" class="stack" style="margin-top:14px"></div>
-            <div id="psychologyHistory" class="stack" style="margin-top:18px"></div>
-          </div>
+        <div class="card span6">
+          <h2 class="sectionTitle">Psicologia do trader</h2>
+          <div id="psychologyOutput" class="stack"><p class="mini">A carregar...</p></div>
+          <button class="btn primary" onclick="runPsychology()">Actualizar</button>
+          <div id="psychologyHistory" class="stack" style="margin-top:10px"></div>
         </div>
-      </section>
 
-      <section id="page-regime" class="page">
-        <div class="grid">
-          <div class="card span12">
-            <h2 class="sectionTitle">Market Regime AI</h2>
-            <div class="metricbar">
-              <div><small>Regime</small><b id="regimeName2" class="cyan">--</b></div>
-              <div><small>Confiança</small><b id="regimeConf2">--</b></div>
-            </div>
-            <div class="grid">
-              <div class="card span6">
-                <h2 class="sectionTitle">Drivers</h2>
-                <div id="regimeDrivers"><p class="mini">Sem drivers.</p></div>
-              </div>
-              <div class="card span6">
-                <h2 class="sectionTitle">Estratégias</h2>
-                <div id="regimeAllowed"><p class="mini">--</p></div>
-                <div id="regimeBlocked" style="margin-top:10px"><p class="mini">--</p></div>
-              </div>
-            </div>
-          </div>
+        <div class="card span6">
+          <h2 class="sectionTitle">Journal & Reflexão</h2>
+          <div class="control"><label>Reflexão</label><textarea id="journalText" rows="2" placeholder="Ex: entrei ansioso, fechei com disciplina..."></textarea></div>
+          <button class="btn primary" onclick="saveJournal()">Guardar</button>
+          <div id="journalEntries" class="stack" style="margin-top:10px"><p class="mini">Sem notas.</p></div>
         </div>
-      </section>
 
-      <section id="page-capital" class="page">
-        <div class="grid">
-          <div class="card span12">
-            <h2 class="sectionTitle">Capital Allocation AI</h2>
-            <p class="subtitle" style="margin-top:0">Controla risco por trade, sessão e modo. Protege primeiro, cresce depois.</p>
-            <div class="metricbar">
-              <div><small>Risco hoje</small><b id="capitalRiskToday">--</b></div>
-              <div><small>Live capital</small><b id="capitalLive">--</b></div>
-              <div><small>Modo</small><b id="capitalMode">--</b></div>
-              <div><small>Modo</small><b id="capitalUpdated">--</b></div>
-            </div>
-            <div id="capitalGuards" class="stack" style="margin-top:14px"></div>
+        <div class="card span12">
+          <h2 class="sectionTitle">Marketplace auditável</h2>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px">
+            <button class="btn primary" onclick="refreshMarketplace()">Recarregar</button>
+            <button class="btn" onclick="addDemoMarketplaceStrategy()">Adicionar demo</button>
           </div>
+          <div class="stack" id="marketRows"><p class="mini">A carregar...</p></div>
         </div>
-      </section>
 
-      <section id="page-marketplace" class="page">
-        <div class="grid">
-          <div class="card span12">
-            <h2 class="sectionTitle">Marketplace auditável</h2>
-            <p class="subtitle" style="margin-top:0">Estratégias com histórico, regime score, drawdown e trust — sem gurus sem provas.</p>
-            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px;">
-              <button class="btn primary" onclick="refreshMarketplace()">Recarregar marketplace</button>
-              <button class="btn" onclick="addDemoMarketplaceStrategy()">Adicionar estratégia demo</button>
-            </div>
-            <div class="stack" id="marketRows"><p class="mini">A carregar estratégias auditáveis...</p></div>
-          </div>
+        <div class="card span12">
+          <h2 class="sectionTitle">Análise visual</h2>
+          <canvas id="visualEquityCanvas" height="180" style="width:100%"></canvas>
+          <div id="visualRecent" style="margin-top:10px"><p class="mini">A carregar setups...</p></div>
         </div>
-      </section>
 
-      <section id="page-visual" class="page">
-        <div class="grid">
-          <div class="card span12">
-            <h2 class="sectionTitle">Análise visual</h2>
-            <p class="subtitle" style="margin-top:0">Revisa setups, contexto e razões para entrar ou não entrar numa operação.</p>
-            <div class="card span12" style="margin-top:14px">
-              <h2 class="sectionTitle">Evolução do capital (paper)</h2>
-              <canvas id="visualEquityCanvas" height="220" style="width:100%"></canvas>
-            </div>
-            <div class="card span12" style="margin-top:14px">
-              <h2 class="sectionTitle">Setups recentes</h2>
-              <div id="visualRecent"><p class="mini">A carregar setups recentes...</p></div>
-            </div>
+        <div class="card span12">
+          <h2 class="sectionTitle">QuantFund AI</h2>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px">
+            <button class="btn primary" onclick="renderQuantFund()">Recarregar</button>
           </div>
-        </div>
-      </section>
-
-      <section id="page-quantfund" class="page">
-        <div class="grid">
-          <div class="card span12">
-            <h2 class="sectionTitle">QuantFund AI</h2>
-            <p class="subtitle" style="margin-top:0">Estatísticas do book paper e plano diário.</p>
-            <button class="btn primary" onclick="renderQuantFund()" style="margin-bottom:14px">Recarregar QuantFund AI</button>
-            <div id="quantfundSummary"><p class="mini">A calcular métricas...</p></div>
-            <div class="card span12" style="margin-top:14px">
-              <h2 class="sectionTitle">Evolução do capital (paper)</h2>
-              <canvas id="equityCanvas" height="220" style="width:100%"></canvas>
-            </div>
-            <div class="card span12" style="margin-top:14px">
-              <h2 class="sectionTitle">Edge Tracking</h2>
-              <div id="edgeTracking"><p class="mini">A carregar edge tracking...</p></div>
-            </div>
-          </div>
-          <div class="card span12">
-            <h2 class="sectionTitle">Plano diário</h2>
-            <div id="quantfundPlan"><p class="mini">Sem plano carregado.</p></div>
-          </div>
-          <div class="card span12">
-            <h2 class="sectionTitle">Histórico recente</h2>
-            <div id="quantfundHistory"><p class="mini">Sem atualizações.</p></div>
-          </div>
-        </div>
-      </section>
-
-      <section id="page-journal" class="page">
-    <div class="grid">
-      <div class="card span12">
-        <h2 class="sectionTitle">Journal & Reflexão</h2>
-        <p class="subtitle" style="margin-top:0">Escreve, guarda e transforma em padrões.</p>
-        <div class="grid">
-          <div class="card span6">
-            <div class="control">
-              <label>Reflexão</label>
-              <textarea id="journalText" rows="4" placeholder="Ex: entrei ansioso, fechei com disciplina..."></textarea>
-            </div>
-            <button class="btn primary" onclick="saveJournal()">Guardar reflexão</button>
-            <div id="journalInsights" class="stack" style="margin-top:14px"></div>
-          </div>
-          <div class="card span6">
-            <h2 class="sectionTitle">Histórico</h2>
-            <div id="journalEntries" class="stack"><p class="mini">Sem notas ainda.</p></div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div id="journalDailyReport" class="stack" style="margin-top:14px"></div>
-  </section>
-
-      <section id="page-profile" class="page">
-        <div class="grid">
-          <div class="card span12">
-            <h2 class="sectionTitle">Perfil individual</h2>
-            <p class="subtitle" style="margin-top:0">Histórico, métricas e regras pessoais do teu trading.</p>
-            <div class="grid">
-              <div class="card span6">
-                <h2 class="sectionTitle">Resumo</h2>
-                <div id="profileSummary"><p class="mini">Carregando perfil...</p></div>
-              </div>
-              <div class="card span6">
-                <h2 class="sectionTitle">Regras pessoais</h2>
-                <div id="profileRules"><p class="mini">Sem regras guardadas.</p></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="page-ideas" class="page">
-        <div class="grid">
-          <div class="card span12"><h2 class="sectionTitle">Funcionalidades</h2><div class="ideaGrid" id="ideaGrid"></div></div>
+          <div id="quantfundSummary" class="stack" style="margin-top:6px"><p class="mini">A calcular...</p></div>
+          <canvas id="equityCanvas" height="180" style="width:100%;margin-top:10px"></canvas>
+          <div id="edgeTracking" class="stack" style="margin-top:10px"><p class="mini">A carregar edge...</p></div>
         </div>
       </section>
     </main>
-
-    <nav class="mobilebar">
-      <a href="#dashboard" data-route="dashboard">⚡ Painel</a>
-      <details class="nav-cat">
-        <summary>Operacoes</summary>
-        <div class="nav-sub">
-          <a href="#session" data-route="session">⚡ Sessao</a>
-          <a href="#gps" data-route="gps">🔎 GPS</a>
-          <a href="#copilot" data-route="copilot">✅ Copilot</a>
-          <a href="#marketplace" data-route="marketplace">🏪 Marketplace</a>
-        </div>
-      </details>
-      <details class="nav-cat">
-        <summary>Estatistica</summary>
-        <div class="nav-sub">
-          <a href="#visual" data-route="visual">📊 Visual</a>
-          <a href="#quantfund" data-route="quantfund">📈 QF</a>
-          <a href="#profile" data-route="profile">👤 Perfil</a>
-        </div>
-      </details>
-      <details class="nav-cat">
-        <summary>Diario</summary>
-        <div class="nav-sub">
-          <a href="#journal" data-route="journal">📝 Journal</a>
-          <a href="#coach" data-route="coach">🧠 Coach</a>
-        </div>
-      </details>
-      <a href="#ideas" data-route="ideas">💡 IDEAS</a>
-    </nav>
   </div>
 
-  <script src="assets/app.js?v=spa-nav"></script>
+  <script src="assets/app.js?v=cockpit"></script>
   <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
   <script type="text/javascript">
     if (window.TradingView && window.TradingView.widget) {
