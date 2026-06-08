@@ -775,6 +775,34 @@ def _quantfund_snapshot() -> Dict[str, Any]:
     }
 
 
+@app.get("/api/visual/recent")
+def visual_recent(limit: int = 12) -> Dict[str, Any]:
+    init_db()
+    with db() as con:
+        gps = con.execute(
+            "SELECT created_at, symbol, direction, reason, verdict, score, payload FROM trading_gps_entries ORDER BY id DESC LIMIT ?",
+            (min(int(limit), 50),),
+        ).fetchall()
+    items=[]
+    for r in gps:
+        try:
+            if isinstance(r["payload"], str):
+                payload=json.loads(r["payload"] or "{}")
+            else:
+                payload={}
+        except Exception:
+            payload={}
+        items.append({
+            "created_at": r["created_at"],
+            "asset": r["symbol"] or payload.get("symbol") or "XAU/USD",
+            "direction": (r["direction"] or "setup").upper(),
+            "note": r["reason"] or payload.get("setup") or "Setup GPS",
+            "bias": "go" if r["verdict"]=="go" else ("wait" if r["verdict"]=="wait" else "block"),
+            "score": r["score"],
+        })
+    return {"items": items, "source": "trading_gps_entries", "count": len(items), "updated_at": __import__("datetime").datetime.now(tz=__import__("datetime").timezone.utc).isoformat()}
+
+
 @app.get("/api/strategies")
 def strategies() -> Dict[str, Any]:
     init_db()

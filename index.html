@@ -38,6 +38,7 @@
         <details class="nav-cat">
           <summary>Estatística</summary>
           <div class="nav-sub">
+            <a class="nav-link" href="#visual"><span>📊 Análise visual</span><small class="mini">setups</small></a>
             <a class="nav-link" href="#quantfund"><span>▥ QuantFund</span><small class="mini">métricas</small></a>
             <a class="nav-link" href="#profile"><span>👤 Perfil</span><small class="mini">conta</small></a>
           </div>
@@ -163,12 +164,14 @@
         <div class="grid">
           <div class="card span12">
             <h2 class="sectionTitle">Capital Allocation AI</h2>
+            <p class="subtitle" style="margin-top:0">Controla risco por trade, sessão e modo. Protege primeiro, cresce depois.</p>
             <div class="metricbar">
               <div><small>Risco hoje</small><b id="capitalRiskToday">--</b></div>
               <div><small>Live capital</small><b id="capitalLive">--</b></div>
               <div><small>Modo</small><b id="capitalMode">--</b></div>
+              <div><small>Modo</small><b id="capitalUpdated">--</b></div>
             </div>
-            <div id="capitalGuards" class="stack"><p class="mini">Sem guards.</p></div>
+            <div id="capitalGuards" class="stack" style="margin-top:14px"></div>
           </div>
         </div>
       </section>
@@ -183,6 +186,23 @@
               <button class="btn" onclick="addDemoMarketplaceStrategy()">Adicionar estratégia demo</button>
             </div>
             <div class="stack" id="marketRows"><p class="mini">A carregar estratégias auditáveis...</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="page-visual" class="page">
+        <div class="grid">
+          <div class="card span12">
+            <h2 class="sectionTitle">Análise visual</h2>
+            <p class="subtitle" style="margin-top:0">Revisa setups, contexto e razões para entrar ou não entrar numa operação.</p>
+            <div class="card span12" style="margin-top:14px">
+              <h2 class="sectionTitle">Evolução do capital (paper)</h2>
+              <canvas id="visualEquityCanvas" height="220" style="width:100%"></canvas>
+            </div>
+            <div class="card span12" style="margin-top:14px">
+              <h2 class="sectionTitle">Setups recentes</h2>
+              <div id="visualRecent"><p class="mini">A carregar setups recentes...</p></div>
+            </div>
           </div>
         </div>
       </section>
@@ -278,6 +298,7 @@
       <details class="nav-cat">
         <summary>Estatistica</summary>
         <div class="nav-sub">
+          <a href="#visual" data-route="visual">📊 Visual</a>
           <a href="#quantfund" data-route="quantfund">📈 QF</a>
           <a href="#profile" data-route="profile">👤 Perfil</a>
         </div>

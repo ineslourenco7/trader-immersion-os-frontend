@@ -5,6 +5,7 @@ let TWIN = null;
 let ACTIVE_SESSION = null;
 let MT5 = null;
 let API_ON = false;
+let TRADING_STATE = null;
 const SIDEBAR_KEY = 'tr-sidebar-collapsed-8129';
 function applySidebarState(){
   const sidebar = document.querySelector('.sidebar');
@@ -37,6 +38,7 @@ const routes = {
  marketplace:{title:'Marketplace auditável', sub:'Estratégias com histórico, regime score, drawdown e trust — sem gurus sem provas.'},
  journal:{title:'Journal & Reflexão', sub:'Escreve o que aconteceu, identifica padrões e melhora a tua disciplina sessão após sessão.'},
  profile:{title:'Perfil individual', sub:'Histórico, métricas e regras pessoais do trading.'},
+ visual:{title:'Análise visual', sub:'Revisa setups, contexto e razões para entrar ou não entrar numa operação.'},
  ideas:{title:'O que o Trading Room faz por ti', sub:'Funcionalidades pensadas para acompanhar trades, proteger capital e melhorar disciplina.'}
 };
 
@@ -54,7 +56,7 @@ const IDEAS = [
  {name:'QuantFund AI', tag:'estatísticas', status:'ativo', text:'Gera estatísticas, planos de melhoria diários, disciplina e scores emocionais/técnicos — papel primeiro.'},
  {name:'Journal & Reflexão', tag:'coach', status:'ativo', text:'Escreve o que aconteceu, identifica padrões e melhora a tua disciplina sessão após sessão.'},
  {name:'Perfil individual', tag:'conta', status:'ativo', text:'Histórico, métricas e regras pessoais do trading.'},
- {name:'Análise visual', tag:'gráfico', status:'em breve', text:'Ajuda a rever setups, contexto e razões para entrar ou não entrar numa operação.'}
+ {name:'Análise visual', tag:'gráfico', status:'ativo', text:'Ajuda a rever setups, contexto e razões para entrar ou não entrar numa operação.'}
 ];
 
 async function apiGet(path, fallbackUrl){
@@ -119,6 +121,7 @@ async function refreshLiveData(){
   if (!TWIN) TWIN = {};
   ACTIVE_SESSION = (await fetch(`${API}/api/session/active`, {cache:'no-store'}).then(r2=>r2.json()).catch(()=>({active:null}))).active;
   MT5 = (await fetch(`${API}/api/mt5/accounts`, {cache:'no-store'}).then(r2=>r2.json()).catch(()=>({accounts:[], recent_trades:[], metrics:{}}))) || MT5;
+  TRADING_STATE = (await fetch(`${API}/api/trading-state`, {cache:'no-store'}).then(r2=>r2.json()).catch(()=>null)) || TRADING_STATE;
   API_ON = true;
  }catch(e){ console.warn('refresh failed', e); }
 }
@@ -150,23 +153,29 @@ function route(){
   if(k==='capital') renderCapital();
   if(k==='journal') renderJournal();
   if(k==='profile') renderProfile();
+  if(k==='marketplace') renderMarketplace();
+  if(k==='visual') renderVisual();
   renderAll();
 }
 function renderAll(){
   if(!DATA || !TWIN) return;
   const m=DATA.metrics||{};
-  document.querySelector('#metricTrades').textContent=m.trade_count||0;
-  document.querySelector('#metricWinrate').textContent=fmtPct(m.win_rate);
-  document.querySelector('#metricPnl').textContent=fmtPct(m.total_pnl_pct);
-  document.querySelector('#metricDD').textContent=fmtPct(m.max_drawdown_pct);
-  document.querySelector('#strategyJson').textContent=JSON.stringify(DATA.strategy||{}, null, 2);
-  document.querySelector('#regimeName').textContent=DATA.regime?.current || 'paper-observed';
-  document.querySelector('#regimeConf').textContent=fmtPct(DATA.regime?.confidence || 0);
-  document.querySelector('#coachState').textContent=DATA.coach?.state || `Twin risk ${fmtPct(TWIN.adaptive_emotional_risk || TWIN.emotional_risk_base)}`;
-  document.querySelector('#revengeRisk').textContent=fmtPct(DATA.coach?.revenge_risk || TWIN.revenge_risk_base || 0);
-  document.querySelector('#riskBudget').textContent=fmtPct(DATA.capital?.today_risk_budget_pct || 0);
-  document.querySelector('#liveCapital').textContent=DATA.capital?.live_capital_enabled?'ON':'OFF';
+  set('#metricTrades', m.trade_count||0);
+  set('#metricWinrate', fmtPct(m.win_rate));
+  set('#metricPnl', fmtPct(m.total_pnl_pct));
+  set('#metricDD', fmtPct(m.max_drawdown_pct));
+  set('#strategyJson', JSON.stringify(DATA.strategy||{}, null, 2));
+  set('#regimeName', DATA.regime?.current || 'paper-observed');
+  set('#regimeConf', fmtPct(DATA.regime?.confidence || 0));
+  set('#coachState', DATA.coach?.state || `Twin risk ${fmtPct(TWIN.adaptive_emotional_risk || TWIN.emotional_risk_base)}`);
+  set('#revengeRisk', fmtPct(DATA.coach?.revenge_risk || TWIN.revenge_risk_base || 0));
+  set('#riskBudget', fmtPct(DATA.capital?.today_risk_budget_pct || 0));
+  set('#liveCapital', DATA.capital?.live_capital_enabled?'ON':'OFF');
   renderTrades(); renderLists(); renderMarketplace(); renderEngine(); renderSession(); renderIdeas(); renderConnectAccount();
+}
+function set(sel, value){
+  const el=document.querySelector(sel);
+  if(el) el.textContent=value;
 }
 function safeArr(x){ return Array.isArray(x) ? x : []; }
 function renderTrades(){ const rows=safeArr(DATA.recent_trades).slice(-8).reverse(); const html = rows.length?rows.map(t=>{const side=String(t.direction||t.side||'Buy'); const klass=side.toLowerCase().includes('sell')?'sell':'buy'; const pnl=Number(t.pnl_pct||t.pnl||0); return `<div class="trade"><span class="badge ${klass}">${side}</span><span class="mono">${t.timestamp||t.asset||'paper'}</span><strong class="${pnl>=0?'ok':'bad'}">${fmtPct(pnl)}</strong></div>`}).join(''):'<p class="mini">Ainda sem trades suficientes.</p>'; ['#recentTrades','#engineRecentTrades'].forEach(sel=>{ const el=document.querySelector(sel); if(el) el.innerHTML=html; }); }
@@ -180,8 +189,48 @@ function renderLists(){
 }
 function renderMarketplace(){
  const root=document.querySelector('#marketRows'); if(!root) return;
- if(DATA && safeArr(DATA.marketplace).length){ root.innerHTML=safeArr(DATA.marketplace).map(s=>`<div class="strategy"><span class="badge buy">${s.score}</span><span><b>${s.name}</b><br><small class="mini">${s.regime} · ${s.status}</small></span><strong class="cyan">${s.trust}</strong></div>`).join(''); return; }
- apiGet('/api/marketplace','data/marketplace.json').then(j=>{ const list=j.items||[]; root.innerHTML=list.length?list.map(s=>`<div class="strategy"><span class="badge buy">${s.score}</span><span><b>${s.name}</b><br><small class="mini">${s.regime} · ${s.status}</small></span><strong class="cyan">${s.trust}</strong></div>`).join(''):'<p class="mini">As estratégias auditáveis aparecem aqui quando houver histórico comparável.</p>'; }).catch(()=>{ root.innerHTML='<p class="mini">As estratégias auditáveis aparecem aqui quando houver histórico comparável.</p>'; });
+ if(DATA && safeArr(DATA.marketplace).length){ renderMarketplaceItems(safeArr(DATA.marketplace)); return; }
+ apiGet('/api/marketplace','data/marketplace.json').then(j=>{
+  const list=safeArr(j.items);
+  renderMarketplaceItems(list);
+ }).catch(()=>{ root.innerHTML='<p class="mini">Sem marketplace disponível agora.</p>'; });
+}
+function renderMarketplaceItems(list){
+ const root=document.querySelector('#marketRows'); if(!root) return;
+ const empty=list.length === 0;
+ const fallback=list.map(s=>`<div class="strategy"><span class="badge buy">${s.score}</span><span><b>${s.name}</b><br><small class="mini">${s.regime} · ${s.status}</small></span><strong class="cyan">${s.trust}</strong></div>`).join('');
+ const components=list.map(s=>{
+  const scoreClass=(Number(s.score)||0) >= 80 ? 'buy' : (Number(s.score)||0) >= 60 ? 'amb' : 'sell';
+  const drawdown=s.max_drawdown != null ? `${(Number(s.max_drawdown)*100).toFixed(1)}%` : '--';
+  const winrate=s.win_rate != null ? `${(Number(s.win_rate)*100).toFixed(1)}%` : '--';
+  return `<div class="strategy card">
+   <div style="display:flex;align-items:center;gap:10px;justify-content:space-between">
+    <div>
+     <b>${s.name}</b>
+     <br><small class="mini">${s.regime || 'any'} · ${s.status || 'paper'}</small>
+     ${s.description ? `<p class="mini" style="margin-top:6px">${s.description}</p>` : ''}
+    </div>
+    <div style="text-align:right">
+     <span class="badge ${scoreClass}">${s.score}</span>
+     <br><strong class="cyan">${s.trust}</strong>
+    </div>
+   </div>
+   <div class="metricbar" style="margin-top:10px">
+    <div><small>Win rate</small><b>${winrate}</b></div>
+    <div><small>Drawdown</small><b class="bad">${drawdown}</b></div>
+   </div>
+  </div>`;
+ }).join('');
+ root.innerHTML=components || '<p class="mini">As estratégias auditáveis aparecem aqui quando houver histórico comparável.</p>';
+}
+function refreshMarketplace(){
+ const root=document.querySelector('#marketRows'); if(!root) return;
+ root.innerHTML='<p class="mini">A atualizar marketplace...</p>';
+ renderMarketplace();
+}
+function addDemoMarketplaceStrategy(){
+ const payload={name:'Demo Marketplace Strategy',regime:'trend pullback',status:'paper',score:74,trust:'queued',win_rate:0,description:'Estratégia demo para validar UI do marketplace.'};
+ apiPost('/api/marketplace', payload).then(()=>refreshMarketplace()).catch(()=>refreshMarketplace());
 }
 function renderQuantFund(){
  const root=document.querySelector('#quantfundSummary'); if(!root) return;
@@ -241,11 +290,12 @@ function renderRegime(){
  }).catch(()=>{ drivers.innerHTML='<p class="mini">Sem dados de regime.</p>'; });
 }
 function renderCapital(){
- const risk=document.querySelector('#capitalRiskToday'); const live=document.querySelector('#capitalLive'); const mode=document.querySelector('#capitalMode'); const guards=document.querySelector('#capitalGuards'); if(!risk||!live||!mode||!guards) return;
+ const risk=document.querySelector('#capitalRiskToday'); const live=document.querySelector('#capitalLive'); const mode=document.querySelector('#capitalMode'); const guards=document.querySelector('#capitalGuards'); const updated=document.querySelector('#capitalUpdated'); if(!risk||!live||!mode||!guards) return;
  apiGet('/api/capital','data/capital.json').then(j=>{
   risk.textContent=fmtPct(j.today_risk_budget_pct);
   live.textContent=j.live_capital_enabled?'ON':'OFF';
   mode.textContent=j.mode||'paper';
+  if(updated) updated.textContent = j.updated_at ? String(j.updated_at).slice(0,19).replace('T',' ') : '--';
   guards.innerHTML=safeArr(j.guards).map(x=>`<div class="row"><span>${x}</span><b class="amb">guard</b></div>`).join('');
  }).catch(()=>{ guards.innerHTML='<p class="mini">Sem dados de capital.</p>'; });
 }
@@ -372,22 +422,23 @@ async function renderJournal(){
  }
  async function renderJournalDailyReport(){
  const el=document.querySelector('#journalDailyReport'); if(!el) return;
- const historyEl=document.querySelector('#journalEntries');
- const insightEl=document.querySelector('#journalInsights');
- const items=[];
- const histText = historyEl ? historyEl.textContent || '' : '';
- const local = JSON.parse(localStorage.getItem('traderJournal')||'[]');
- const insightText = insightEl ? (insightEl.textContent || '') : '';
- const summary = `Relatório diário automático (offline). Total em cache: ${local.length}. Insight recente: ${insightText || 'Sem insight automático.'}`;
- el.innerHTML = `
-  <div class="card span12">
+ apiGet('/api/journal/daily-report','data/journal-daily-report.json').then(j=>{
+  const insights=safeArr(j.insights).map(x=>`<div class="row"><span>${x}</span><b class="amb">insight</b></div>`).join('');
+  const tags=safeArr(j.top_tags).map(x=>`<span class="chip hot">${x.tag} x${x.count}</span>`).join('');
+  const pnl=j.pnl_bias||{};
+  el.innerHTML=`<div class="card span12">
    <h2 class="sectionTitle">Relatório diário automático</h2>
-   <p class="subtitle" style="margin-top:0">Modo offline: usa registos em cache enquanto o backend não tiver a rota.</p>
-   <p>${summary}</p>
-   <div class="stack">
-    <div class="row"><span>Estado</span><b class="amb">cliente</b></div>
+   <p class="subtitle" style="margin-top:0">${j.headline||'Relatório diário'} · ${String(j.date||'').slice(0,10)}</p>
+   <p class="mini">${j.summary||''}</p>
+   <div class="metricbar">
+    <div><small>Entradas</small><b>${j.entry_count??0}</b></div>
+    <div><small>Positivos</small><b class="ok">${pnl.positive??0}</b></div>
+    <div><small>Negativos</small><b class="bad">${pnl.negative??0}</b></div>
    </div>
+   <div class="stack" style="margin-top:10px">${tags||'<span class="chip hot">sem tags</span>'}</div>
+   <div class="stack" style="margin-top:10px">${insights||'<p class="mini">Sem insights agora.</p>'}</div>
   </div>`;
+ }).catch(()=>{ el.innerHTML='<p class="mini">Sem relatório diário agora.</p>'; });
 }
 async function renderStrategyBlueprints(){
  const el=document.querySelector('#strategyBlueprints'); if(!el) return;
@@ -461,20 +512,40 @@ function renderGps(){
 }
 async function runGps(){
  try{
-  const r=await fetch('/api/trading-gps', {cache:'no-store'});
-  const j=await r.json();
-  const el=document.querySelector('#gpsScore'); if(el) el.textContent='--';
-  const v=document.querySelector('#gpsVerdict'); if(v) v.textContent=j.verdict==='go'?'Operar':'Aguardar';
-  if(j.regime_confidence==null){ alert('GPS não conseguiu avaliar agora.'); return; }
-  const score=Math.round((j.regime_confidence||0)*100);
-  const out=document.querySelector('#gpsScore'); if(out) out.textContent=`${score}/100`;
-  const txt=['regime',j.regime,'trades',j.trades_count,'win rate',Math.round((j.win_rate||0)*100)+'%'].join(' · ');
-  if(v) v.textContent=txt;
+  const state = (await fetch('/api/trading-state', {cache:'no-store'}).then(r => r.json()).catch(()=>null)) || {};
+  const scoreEl = document.querySelector('#gpsScore');
+  const verdictEl = document.querySelector('#gpsVerdict');
+  const blockedEl = document.querySelector('#gpsBlocked');
+  const regimeEl = document.querySelector('#gpsRegime');
+  if (scoreEl) scoreEl.textContent = '--';
+  if (verdictEl) verdictEl.textContent = 'A carregar...';
+  const gps = await fetch('/api/trading-gps', {cache:'no-store'}).then(r => r.json()).catch(() => null);
+  const stateScore = state.mental_risk != null ? Math.round((1 - state.mental_risk) * 100) : null;
+  const gpsScore = gps && gps.regime_confidence != null ? Math.round(gps.regime_confidence * 100) : null;
+  const score = gpsScore ?? stateScore ?? '--';
+  if (scoreEl) scoreEl.textContent = score === '--' ? '--' : `${score}/100`;
+  if (!gps && state) {
+    if (state.copilot_decision === 'approved') {
+      if (verdictEl) verdictEl.textContent = 'Sessão autorizada';
+    } else {
+      if (verdictEl) verdictEl.textContent = 'Aguardar sessão autorizada';
+    }
+    if (blockedEl) blockedEl.textContent = gps ? 'Reavaliar' : 'Sem reavaliação';
+    if (regimeEl) regimeEl.textContent = state.session_regime || 'unknown';
+    try { renderGpsHistory('Sem reavaliação GPS agora; nota baseada no estado da sessão.'); } catch(_){}
+    return;
+  }
+  if (!gps) { if (verdictEl) verdictEl.textContent = 'Aguardar dados.'; if (blockedEl) blockedEl.textContent = '--'; }
+  else {
+    if (verdictEl) verdictEl.textContent = gps.verdict === 'go' ? 'Operar' : 'Aguardar';
+    if (blockedEl) blockedEl.textContent = gps.blocked ? 'Bloqueado' : 'Livre';
+    if (regimeEl) regimeEl.textContent = gps.regime || state?.session_regime || 'unknown';
+  }
  }catch(e){ console.warn('gps failed', e); }
 }
 
 // ROTA: COPILOT
-function renderCopilot(){ if(!DATA || !TWIN) return; const risks = [document.querySelector('#copilotRisk'), document.querySelector('#copilotRR'), document.querySelector('#copilotRulesPass'), document.querySelector('#copilotDecision')].filter(Boolean); risks.forEach(el => el.textContent = el?.textContent || '--'); const riskBudget = Number(DATA?.capital?.today_risk_budget_pct || 0); const emotional = Number(TWIN?.adaptive_emotional_risk || TWIN?.emotional_risk_base || 0); const rr = document.querySelector('#copilotRRInput')?.value ? fmtPct(Number(document.querySelector('#copilotRRInput').value)) : '1.6'; document.querySelector('#copilotRulesPass').textContent = '4/5'; document.querySelector('#copilotDecision').innerHTML = '<strong>Aguardar checklist</strong><span>Confirma as condições para validar o trade.</span>'; }
+function renderCopilot(){ if(!DATA || !TWIN) return; const risks = [document.querySelector('#copilotRisk'), document.querySelector('#copilotRR'), document.querySelector('#copilotRulesPass'), document.querySelector('#copilotDecision')].filter(Boolean); risks.forEach(el => { if(el) el.textContent = el?.textContent || '--'; }); const riskBudget = Number(DATA?.capital?.today_risk_budget_pct || 0); const emotional = Number(TWIN?.adaptive_emotional_risk || TWIN?.emotional_risk_base || 0); const rr = document.querySelector('#copilotRRInput')?.value ? fmtPct(Number(document.querySelector('#copilotRRInput').value)) : '1.6'; document.querySelector('#copilotRulesPass').textContent = '4/5'; document.querySelector('#copilotDecision').innerHTML = '<strong>Aguardar checklist</strong><span>Confirma as condições para validar o trade.</span>'; fetch('/api/trading-state', {cache:'no-store'}).then(r => r.json()).then(state => { if (!state) return; const passed = (DATA?.capital?.today_risk_budget_pct || 0) > 0 && (Number(TWIN?.adaptive_emotional_risk || TWIN?.emotional_risk_base || 0) || 0) <= 0.75 ? '5/5' : '4/5'; document.querySelector('#copilotRisk').textContent = fmtPct(Number(state.mental_risk || 0)); document.querySelector('#copilotRR').textContent = '1.6'; document.querySelector('#copilotRulesPass').textContent = passed; const decision = document.querySelector('#copilotDecision'); if (!decision) return; if (state.copilot_decision === 'approved') { decision.className = 'decision allow'; decision.innerHTML = '<strong>Trade autorizado pelo estado da sessão</strong><span>GPS mental/regime OK. Confirma checklist e executa.</span>'; } else { decision.className = 'decision block'; decision.innerHTML = '<strong>Sessão ainda não autorizada</strong><span>Completa checklist de sessão ou espera regime mais claro.</span>'; } }).catch(()=>{}); }
 
 async function runCopilot(){
  try {
@@ -505,16 +576,16 @@ function renderPsychology(){}
 
 async function runPsychology(){
  try {
-  const twin = TWIN || compute_twin ? (typeof compute_twin === "function" ? compute_twin() : TWIN) : TWIN;
-  const score = Number(twin?.adaptive_emotional_risk || twin?.emotional_risk_base || 0);
-  const normalizedScore = Math.round((1 - Math.min(1, Math.max(0, score))) * 100);
+  const res = await fetch('/api/psychology', {cache:'no-store'}).then(r => r.json()).catch(() => null);
+  if (!res) return;
+  const score = Number(res.score ?? 0);
   const coachState = document.querySelector('#coachState');
   const revengeRisk = document.querySelector('#revengeRisk');
   const coachRules = document.querySelector('#coachRules');
-  if (coachState) coachState.textContent = String(normalizedScore);
-  if (revengeRisk) revengeRisk.textContent = fmtPct(score);
-  if (coachRules && twin?.next_guardrail_suggestions) {
-   coachRules.innerHTML = twin.next_guardrail_suggestions.map((rule) => `<div class="row"><span>${rule}</span><b class="amb">regra</b></div>`).join('');
+  if (coachState) coachState.textContent = `${score}`;
+  if (revengeRisk) revengeRisk.textContent = `${Number((res.emotional_risk ?? res.revenge_risk ?? 0)).toFixed(2)}`;
+  if (coachRules && Array.isArray(res.rules)) {
+   coachRules.innerHTML = res.rules.slice(0,5).map((rule) => `<div class="row"><span>${rule}</span><b class="amb">regra</b></div>`).join('');
   }
  } catch (e) { console.warn('psychology failed', e); }
 }
@@ -553,3 +624,38 @@ function renderProfile(){
  });
 }
 
+
+// ROTA: ANÁLISE VISUAL
+function renderVisual(){
+ drawEquityOn('visualEquityCanvas');
+ apiGet('/api/visual/recent','data/visual-recent.json').then(j=>{
+  const root=document.querySelector('#visualRecent'); if(!root) return;
+  const items = safeArr(j?.items);
+  if(!items.length){ root.innerHTML='<p class="mini">Sem setups registados ainda.</p>'; return; }
+  root.innerHTML = items.map(x=>`<div class="journalEntry"><span><b>${x.asset||'paper'}</b> · ${x.direction||'setup'}<br><small class="mini">${x.note||x.title||'Setup registado'} · ${x.bias||'neutro'}</small></span><time>${String(x.created_at||x.at||x.timestamp||'').slice(0,16).replace('T',' ')}</time></div>`).join('');
+ }).catch(()=>{
+  const root=document.querySelector('#visualRecent'); if(!root) return;
+  root.innerHTML='<p class="mini">Sem dados visuais agora.</p>';
+ });
+}
+function drawEquityOn(canvasId){
+ apiGet('/api/quantfund/equity').then(eq=>{
+  const canvas=document.querySelector(`#${canvasId}`); if(!canvas) return;
+  const points=safeArr(eq?.points);
+  if(!points.length){ const ctx=canvas.getContext('2d'); ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle='#7a8599'; ctx.fillText('Sem pontos para o gráfico.', 12, 20); return; }
+  const rect=canvas.getBoundingClientRect(); canvas.width=Math.max(1, Math.floor(rect.width)); canvas.height=220;
+  const ctx=canvas.getContext('2d'); ctx.clearRect(0,0,canvas.width,canvas.height);
+  const values=points.map(p=>Number(p.equity)||0);
+  const min=Math.min(...values); const max=Math.max(...values); const range=max-min||1;
+  const pad={t:20, b:28, l:50, r:18}; const w=canvas.width-pad.l-pad.r; const h=canvas.height-pad.t-pad.b;
+  const x=i=>pad.l + (points.length>1 ? (i/(points.length-1))*w : w/2);
+  const y=v=>pad.t + h - ((v-min)/range)*h;
+  ctx.beginPath(); ctx.moveTo(x(0), y(values[0]));
+  for(let i=1;i<values.length;i++){ ctx.lineTo(x(i), y(values[i])); }
+  ctx.strokeStyle='#3b82f6'; ctx.lineWidth=2; ctx.stroke();
+  ctx.fillStyle='rgba(59,130,246,0.15)'; ctx.lineTo(x(values.length-1), pad.t+h); ctx.lineTo(x(0), pad.t+h); ctx.closePath(); ctx.fill();
+  ctx.fillStyle='#c7cdd6'; ctx.font='11px Inter, sans-serif'; ctx.textAlign='right';
+  ctx.fillText(max.toFixed(2), pad.l-8, pad.t+12); ctx.fillText(min.toFixed(2), pad.l-8, pad.t+h+4);
+  ctx.beginPath(); ctx.strokeStyle='rgba(255,255,255,0.08)'; ctx.moveTo(pad.l, pad.t+h/2); ctx.lineTo(pad.l+w, pad.t+h/2); ctx.stroke();
+ }).catch(()=>{});
+}
