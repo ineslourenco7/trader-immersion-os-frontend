@@ -2,7 +2,7 @@
 const fmtPct = v => `${((Number(v)||0)*100).toFixed(2)}%`;
 const API = window.location.origin;
 let DATA = null, TWIN = null, ACTIVE_SESSION = null, MT5 = null, API_ON = false;
-const SIDEBAR_KEY = 'tr-sidebar-collapsed-v2';
+const SIDEBAR_KEY = 'tr-sidebar-collapsed-v3';
 
 function applySidebarState(){
   const sidebar = document.querySelector('.sidebar');
@@ -11,24 +11,33 @@ function applySidebarState(){
   sidebar.classList.toggle('collapsed', !!collapsed);
   const btn = document.querySelector('#menuToggle');
   if (btn) btn.setAttribute('aria-label', collapsed ? 'Mostrar menu' : 'Ocultar menu');
+  btn.textContent = collapsed ? '☰' : '✕';
 }
 function toggleSidebar(){
   const sidebar = document.querySelector('.sidebar');
   const collapsed = sidebar && sidebar.classList.toggle('collapsed');
   localStorage.setItem(SIDEBAR_KEY, collapsed ? '1' : '0');
   const btn = document.querySelector('#menuToggle');
-  if (btn) btn.setAttribute('aria-label', collapsed ? 'Mostrar menu' : 'Ocultar menu');
+  if (btn){ btn.setAttribute('aria-label', collapsed ? 'Mostrar menu' : 'Ocultar menu'); btn.textContent = collapsed ? '☰' : '✕'; }
 }
 
-/* Sidebar activa no dashboard */
-function initSidebar(){
-  const links = document.querySelectorAll('[data-route]');
-  links.forEach(a=>a.addEventListener('click', ()=>{
-    links.forEach(x=>x.classList.remove('active'));
+/* Single-page cockpit sections */
+function initCockpit(){
+  document.querySelectorAll('.nav-link').forEach(a=>a.addEventListener('click', (e)=>{
+    e.preventDefault();
+    document.querySelectorAll('.nav-link').forEach(x=>x.classList.remove('active'));
     a.classList.add('active');
-    const name = a.querySelector('span')?.textContent || a.textContent;
-    const title = document.querySelector('#pageTitle');
-    if(title) title.textContent = name;
+    const cockpit = document.querySelector('#cockpit');
+    const outros = document.querySelector('#outros');
+    if(a.getAttribute('href') === '#outros'){
+      if(cockpit) cockpit.style.display='none'; if(outros) outros.style.display='grid';
+      document.querySelector('#pageTitle').textContent='Outros';
+      document.querySelector('#pageSub').textContent='Funcionalidades menos usadas.';
+    }else{
+      if(cockpit) cockpit.style.display='grid'; if(outros) outros.style.display='none';
+      document.querySelector('#pageTitle').textContent='Painel';
+      document.querySelector('#pageSub').textContent='Um ecrã. Nenhum scroll obrigatório.';
+    }
   }));
 }
 
@@ -55,12 +64,13 @@ async function load(){
 
   setInterval(refreshLiveData, 15000);
 
-  await Promise.all([runGps(), runPsychology(), initAutoJournal()]);
+  await Promise.all([runGps(), runPsychology()]);
   renderAll();
   updateApiPill();
+
   const menuBtn = document.querySelector('#menuToggle');
   if (menuBtn) menuBtn.addEventListener('click', toggleSidebar);
-  initSidebar();
+  initCockpit();
 }
 
 async function refreshLiveData(){
@@ -83,7 +93,7 @@ function updateApiPill(){
   if(hint) hint.textContent = API_ON ? 'api vivo' : 'paper';
 }
 
-/* Data binding */
+/* Helpers */
 function set(sel, value){
   const el=document.querySelector(sel);
   if(el) el.textContent=value;
@@ -120,9 +130,9 @@ function renderConnectAccount(){
   const accounts = safeArr(MT5?.accounts);
   const trades = safeArr(MT5?.recent_trades).slice(-6).reverse();
   const metrics = MT5?.metrics || {};
-  const header = `<div class=\"metricbar\"><div><small>Trades</small><b>${metrics.trade_count||0}</b></div><div><small>Win rate</small><b>${fmtPct(metrics.win_rate||0)}</b></div><div><small>PnL</small><b class=\"${Number(metrics.total_pnl||0)>=0?'ok':'bad'}\">${Number(metrics.total_pnl||0).toFixed(2)}</b></div></div>`;
-  const acc = accounts.length ? accounts.map(a=>`<div class=\"row\"><span><b>${a.label}</b> <small class=\"mini\">${a.mode} · ${a.status}</small></span><small class=\"mono\">${a.token||''}</small></div>`).join('') : '<p class=\"mini\">Sem contas ligadas.</p>';
-  const trd = trades.length ? trades.map(t=>`<div class=\"trade\"><span class=\"badge ${String(t.side).toLowerCase().includes('sell')?'sell':'buy'}\">${t.side||'trade'}</span><span class=\"mono\">${t.symbol} · ${t.strategy||t.source}</span><strong class=\"${Number(t.pnl)>=0?'ok':'bad'}\">${Number(t.pnl||0).toFixed(2)}</strong></div>`).join('') : '<p class=\"mini\">Sem trades.</p>';
+  const header = `<div class="metricbar"><div><small>Trades</small><b>${metrics.trade_count||0}</b></div><div><small>Win rate</small><b>${fmtPct(metrics.win_rate||0)}</b></div><div><small>PnL</small><b class="${Number(metrics.total_pnl||0)>=0?'ok':'bad'}">${Number(metrics.total_pnl||0).toFixed(2)}</b></div></div>`;
+  const acc = accounts.length ? accounts.map(a=>`<div class="row"><span><b>${a.label}</b> <small class="mini">${a.mode} · ${a.status}</small></span><small class="mono">${a.token||''}</small></div>`).join('') : '<p class="mini">Sem contas ligadas.</p>';
+  const trd = trades.length ? trades.map(t=>`<div class="trade"><span class="badge ${String(t.side).toLowerCase().includes('sell')?'sell':'buy'}">${t.side||'trade'}</span><span class="mono">${t.symbol} · ${t.strategy||t.source}</span><strong class="${Number(t.pnl)>=0?'ok':'bad'}">${Number(t.pnl||0).toFixed(2)}</strong></div>`).join('') : '<p class="mini">Sem trades.</p>';
   root.innerHTML = header + acc + trd;
 }
 
@@ -131,7 +141,7 @@ function renderSession(){
   const root = document.querySelector('#sessionPanel'); if(!root) return;
   const active = ACTIVE_SESSION ? 'Sessão activa' : 'Sem sessão';
   const klass = ACTIVE_SESSION ? 'ok' : 'amb';
-  root.innerHTML = `<div class=\"value ${klass}\" style=\"font-size:18px\">${active}</div>`;
+  root.innerHTML = `<div class="value ${klass}" style="font-size:16px">${active}</div>`;
 }
 
 /* Engine */
@@ -139,32 +149,28 @@ function renderEngine(){
   const root = document.querySelector('#enginePanel'); if(!root) return;
   const state = DATA?.worker_status || DATA?.engine_state_found ? 'on' : 'off';
   const events = safeArr(DATA?.engine_events).slice(-4).reverse();
-  const ev = events.map(e=>`<div class=\"row\"><span>${e.type}</span><b class=\"${e.status==='ok'?'ok':'amb'}\">${e.status}</b></div>`).join('');
-  root.innerHTML = `<div class=\"value ${state==='on'?'ok':'bad'}\" style=\"font-size:18px\">${state}</div>` + (ev || '<p class=\"mini\">Sem eventos.</p>');
+  const ev = events.map(e=>`<div class="row"><span>${e.type}</span><b class="${e.status==='ok'?'ok':'amb'}">${e.status}</b></div>`).join('');
+  root.innerHTML = `<div class="value ${state==='on'?'ok':'bad'}" style="font-size:16px">${state}</div>` + (ev || '<p class="mini">Sem eventos.</p>');
 }
 
 /* Copilot */
 function renderCopilot(){
   if(!DATA || !TWIN) return;
-  const state = TRADING_STATE || {};
   const riskBudget = Number(DATA?.capital?.today_risk_budget_pct || 0);
   const emotional = Number(TWIN?.adaptive_emotional_risk || TWIN?.emotional_risk_base || 0);
   set('#copilotRulesPass', (riskBudget>0 && emotional<=0.75) ? '5/5' : '4/5');
   set('#copilotRisk', fmtPct(emotional));
-  set('#copilotRR', '1.6');
   const decision = document.querySelector('#copilotDecision');
-  if(state.copilot_decision === 'approved'){
-    if(decision){ decision.className='ok'; decision.textContent='Trade autorizado'; }
-  }else{
-    if(decision){ decision.className='amb'; decision.textContent='Sessão não autorizada'; }
-  }
+  if(decision) decision.className='amb';
+  if(decision && (TRADING_STATE?.copilot_decision === 'approved' || ACTIVE_SESSION)){ decision.className='ok'; decision.textContent='Trade autorizado'; }
+  else if(decision){ decision.className='amb'; decision.textContent='Sessão não autorizada'; }
 }
 async function runCopilot(){
   const checks = [document.querySelector('#copilotTrend')?.checked, document.querySelector('#copilotLiquidity')?.checked, document.querySelector('#copilotStructure')?.checked, document.querySelector('#copilotNews')?.checked, document.querySelector('#copilotRiskOk')?.checked].filter(Boolean).length;
   set('#copilotRulesPass', `${checks}/5`);
   const out = document.querySelector('#copilotOutput');
   if(!out) return;
-  out.innerHTML = checks===5 ? '<div class=\"ok\">Checklist OK — confirma e executa.</div>' : '<div class=\"bad\">Faltam cheques. Completa a checklist.</div>';
+  out.innerHTML = checks===5 ? '<div class="ok">Checklist OK — confirma e executa.</div>' : '<div class="bad">Faltam cheques.</div>';
 }
 
 /* GPS */
@@ -194,14 +200,24 @@ async function runGps(){
 }
 
 /* Psychology */
-function renderPsychology(){}
+let TRADING_STATE = null;
+function renderPsychology(){
+  const score = document.querySelector('#psychScore');
+  const action = document.querySelector('#psychAction');
+  if(score) score.textContent = TWIN?.adaptive_emotional_risk ? Math.round((1-(TWIN.adaptive_emotional_risk||0))*100) : '--';
+  if(action) action.textContent = (TWIN?.next_guardrail_suggestions && TWIN.next_guardrail_suggestions[0]) || 'Respirar';
+}
 async function runPsychology(){
   try{
     const res = await fetch('/api/psychology', {cache:'no-store'}).then(r=>r.json()).catch(()=>null);
-    const root = document.querySelector('#psychologyOutput'); if(!root) return;
-    if(!res){ root.innerHTML = '<p class="mini">Sem análise.</p>'; return; }
-    const score = Number(res.score ?? 0);
-    root.innerHTML = `<div class=\"metricbar\"><div><small>Score</small><b>${score}</b></div><div><small>Acção</small><b>${res.guardrail || 'Respirar'}</b></div></div>`;
+    const score = document.querySelector('#psychScore');
+    const action = document.querySelector('#psychAction');
+    const hist = document.querySelector('#psychologyHistory');
+    if(res){
+      if(score) score.textContent = Number(res.score ?? 0);
+      if(action) action.textContent = res.guardrail || 'Respirar';
+      if(hist) hist.innerHTML = `<div class="row"><span>Actualizado</span><b class="ok">ok</b></div>`;
+    }
   }catch(e){}
 }
 
@@ -215,18 +231,14 @@ async function saveJournal(){
 }
 function renderJournalList(){
   const root = document.querySelector('#journalEntries'); if(!root) return;
-  root.innerHTML='<p class=\"mini\">Guardado localmente.</p>';
+  root.innerHTML='<p class="mini">Guardado localmente.</p>';
 }
 
 /* Marketplace */
 function renderMarketplace(){
   const root = document.querySelector('#marketRows'); if(!root) return;
-  if(DATA && safeArr(DATA.marketplace).length){
-    renderMarketplaceItems(safeArr(DATA.marketplace)); return;
-  }
-  apiGet('/api/marketplace','data/marketplace.json').then(j=>{
-    renderMarketplaceItems(safeArr(j.items));
-  }).catch(()=>{ root.innerHTML='<p class=\"mini">Sem marketplace.</p>'; });
+  if(DATA && safeArr(DATA.marketplace).length){ renderMarketplaceItems(safeArr(DATA.marketplace)); return; }
+  apiGet('/api/marketplace','data/marketplace.json').then(j=>{ renderMarketplaceItems(safeArr(j.items)); }).catch(()=>{ root.innerHTML='<p class="mini">Sem marketplace.</p>'; });
 }
 function renderMarketplaceItems(list){
   const root = document.querySelector('#marketRows'); if(!root) return;
@@ -234,8 +246,8 @@ function renderMarketplaceItems(list){
     const scoreClass = (Number(s.score)||0)>=80?'buy':(Number(s.score)||0)>=60?'amb':'sell';
     const drawdown = s.max_drawdown!=null ? `${(Number(s.max_drawdown)*100).toFixed(1)}%` : '--';
     const winrate = s.win_rate!=null ? `${(Number(s.win_rate)*100).toFixed(1)}%` : '--';
-    return `<div class=\"strategy card\"><div style=\"display:flex;justify-content:space-between\"><div><b>${s.name}</b><br><small class=\"mini\">${s.regime||'any'} · ${s.status||'paper'}</small></div><div style=\"text-align:right\"><span class=\"badge ${scoreClass}\">${s.score}</span><br><strong class=\"cyan\">${s.trust}</strong></div></div><div class=\"metricbar\" style=\"margin-top:10px\"><div><small>Win rate</small><b>${winrate}</b></div><div><small>Drawdown</small><b class=\"bad\">${drawdown}</b></div></div></div>`;
-  }).join('') || '<p class=\"mini\">Sem estratégias.</p>';
+    return `<div class="strategy card"><div style="display:flex;justify-content:space-between"><div><b>${s.name}</b><br><small class="mini">${s.regime||'any'} · ${s.status||'paper'}</small></div><div style="text-align:right"><span class="badge ${scoreClass}">${s.score}</span><br><strong class="cyan">${s.trust}</strong></div></div><div class="metricbar" style="margin-top:10px"><div><small>Win rate</small><b>${winrate}</b></div><div><small>Drawdown</small><b class="bad">${drawdown}</b></div></div></div>`;
+  }).join('') || '<p class="mini">Sem estratégias.</p>';
 }
 function refreshMarketplace(){ renderMarketplace(); }
 function addDemoMarketplaceStrategy(){
@@ -247,24 +259,24 @@ function addDemoMarketplaceStrategy(){
 function renderVisual(){
   const canvas = document.querySelector('#visualEquityCanvas'); if(!canvas) return;
   const ctx = canvas.getContext('2d');
-  const w = canvas.width = canvas.clientWidth; const h = canvas.height = 180;
+  const w = canvas.width = canvas.clientWidth; const h = canvas.height = 160;
   ctx.fillStyle='#0b1120'; ctx.fillRect(0,0,w,h);
-  ctx.strokeStyle='#22c55e'; ctx.lineWidth=1.5; ctx.beginPath(); ctx.moveTo(0,h/2); ctx.lineTo(w,h/2); ctx.stroke();
+  ctx.strokeStyle='#22c55e'; ctx.lineWidth=1.2; ctx.beginPath(); ctx.moveTo(0,h/2); ctx.lineTo(w,h/2); ctx.stroke();
   const root = document.querySelector('#visualRecent'); if(!root) return;
   const trades = safeArr(DATA?.recent_trades).slice(-6).reverse();
-  root.innerHTML = trades.map(t=>`<div class=\"trade\"><span class=\"badge ${String(t.direction||t.side).toLowerCase().includes('sell')?'sell':'buy'}\">${t.direction||t.side}</span><span class=\"mono\">${t.asset||'paper'}</span><strong class=\"${Number(t.pnl_pct||t.pnl||0)>=0?'ok':'bad'}\">${fmtPct(Number(t.pnl_pct||t.pnl||0))}</strong></div>`).join('') || '<p class=\"mini\">Sem setups.</p>';
+  root.innerHTML = trades.map(t=>`<div class="trade"><span class="badge ${String(t.direction||t.side).toLowerCase().includes('sell')?'sell':'buy'}">${t.direction||t.side}</span><span class="mono">${t.asset||'paper'}</span><strong class="${Number(t.pnl_pct||t.pnl||0)>=0?'ok':'bad'}">${fmtPct(Number(t.pnl_pct||t.pnl||0))}</strong></div>`).join('') || '<p class="mini">Sem setups.</p>';
 }
 
 /* QuantFund */
 function renderQuantFund(){
   const root = document.querySelector('#quantfundSummary'); if(!root) return;
   apiGet('/api/quantfund','data/quantfund.json').then(j=>{
-    root.innerHTML = `<div class=\"metricbar\"><div><small>Win rate</small><b class=\"amb\">${fmtPct(j.win_rate)}</b></div><div><small>PnL</small><b>${fmtPct(j.total_pnl_pct)}</b></div><div><small>Drawdown</small><b class=\"bad\">${fmtPct(j.max_drawdown_pct)}</b></div><div><small>Regime</small><b class=\"cyan\">${(j.regime_current||'paper-observed').replace('-',' ')}</b></div></div>`;
-  }).catch(()=>{ root.innerHTML='<p class=\"mini">Sem dados do QuantFund.</p>'; });
+    root.innerHTML = `<div class="metricbar"><div><small>Win rate</small><b class="amb">${fmtPct(j.win_rate)}</b></div><div><small>PnL</small><b>${fmtPct(j.total_pnl_pct)}</b></div><div><small>Drawdown</small><b class="bad">${fmtPct(j.max_drawdown_pct)}</b></div><div><small>Regime</small><b class="cyan">${(j.regime_current||'paper-observed').replace('-',' ')}</b></div></div>`;
+  }).catch(()=>{ root.innerHTML='<p class="mini">Sem dados do QuantFund.</p>'; });
 }
 
 /* Helpers placeholders */
-function initAutoJournal(){ /* auto-save pode ser activado depois */ }
+function initAutoJournal(){}
 
 window.addEventListener('load', load);
 window.addEventListener('hashchange', ()=>{});
