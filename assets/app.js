@@ -61,14 +61,31 @@ function renderSymbolStrip(){
       ACTIVE_TV_SYMBOL = btn.getAttribute('data-tv') || btn.getAttribute('data-tv');
       const label = btn.getAttribute('data-label');
       set('#chartSymbol', label);
-      setChartSymbol(label);
+      setChartSymbol(ACTIVE_TV_SYMBOL);
       renderSymbolStrip();
     });
   });
 }
-function setChartSymbol(label){
-  if(window._tvWidget && typeof window._tvWidget.setSymbol === 'function'){
-    window._tvWidget.setSymbol(label || 'BTCUSD', '15');
+function setChartSymbol(tvSymbol){
+  const container = document.getElementById('tradingview_widget');
+  if(!container) return;
+  container.innerHTML = '';
+  window._tvWidget = null;
+  if(window.TradingView && window.TradingView.widget){
+    try {
+      window._tvWidget = new TradingView.widget({
+        autosize: true,
+        symbol: tvSymbol || 'BINANCE:BTCUSDT',
+        interval: '15',
+        timezone: 'Etc/UTC',
+        theme: 'dark',
+        style: '1',
+        locale: 'pt',
+        enable_publishing: false,
+        hide_top_toolbar: false,
+        container_id: 'tradingview_widget'
+      });
+    } catch (e) { console.warn(e); }
   }
 }
 
