@@ -30,7 +30,6 @@ const TV_SYMBOLS = [
   { tv:'OANDA:XAUUSD', label:'XAUUSD', group:'COMMODITIES' },
   { tv:'OANDA:XAGUSD', label:'XAGUSD', group:'COMMODITIES' },
   { tv:'OANDA:WTI', label:'USOIL', group:'COMMODITIES' },
-  { tv:'OANDA:XNGUSD', label:'NATGAS', group:'COMMODITIES' },
   { tv:'OANDA:EURUSD', label:'EURUSD', group:'FOREX' },
   { tv:'OANDA:GBPUSD', label:'GBPUSD', group:'FOREX' },
   { tv:'OANDA:USDJPY', label:'USDJPY', group:'FOREX' },
@@ -47,7 +46,6 @@ const TV_SYMBOLS = [
   { tv:'TVC:UK100', label:'UK100', group:'INDICES' },
   { tv:'TVC:GER40', label:'GER40', group:'INDICES' },
   { tv:'TVC:JPN225', label:'JPN225', group:'INDICES' },
-  { tv:'TVC:VIX', label:'VIX', group:'INDICES' },
 ];
 
 let ACTIVE_TV_SYMBOL = TV_SYMBOLS[0].tv;
