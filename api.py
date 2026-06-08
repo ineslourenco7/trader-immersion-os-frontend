@@ -1453,6 +1453,61 @@ def psychology() -> Dict[str, Any]:
         "updated_at": now_iso(),
     }
 
-@app.get("/")
+@app.get("/api/trading-room/chats")
+def trading_room_chats(limit: int = 50) -> Dict[str, Any]:
+    init_db()
+    with db() as con:
+        rows = con.execute("SELECT * FROM journal ORDER BY id DESC LIMIT ?", (min(int(limit), 200),)).fetchall()
+    out = []
+    for r in rows:
+        out.append({
+            "id": r["id"],
+            "created_at": r["created_at"],
+            "author": "system",
+            "message": r["text"],
+            "type": "diary",
+        })
+    return {"ok": True, "items": out}
+
+@app.post("/api/trading-room/messages")
+def trading_room_message(payload: Dict[str, Any] = Field(default_factory=dict)) -> Dict[str, Any]:
+    init_db()
+    message = str(payload.get("message") or "").strip()
+    if not message:
+        return {"ok": False}
+    with db() as con:
+        cur = con.execute(
+            "INSERT INTO journal(created_at, text, tags, insight, payload) VALUES(?,?,?,?,?)",
+            (now_iso(), message, "[]", "", json.dumps({"source": "trading-room"}, ensure_ascii=False)),
+        )
+        row_id = cur.lastrowid
+    return {"ok": True, "id": row_id, "created_at": now_iso(), "author": "Inês Traders", "message": message, "type": "chat"}
+
+@app.get("/api/market/news-impact")
+def market_news_impact() -> Dict[str, Any]:
+    return {
+        "items": [
+            {"event": "CPI/m (MoM)", "impact": "ALTO", "time": "14:30"},
+            {"event": "Fed Chair Powell", "impact": "ALTO", "time": "19:00"},
+            {"event": "GDP (QoQ)", "impact": "MÉDIO", "time": "08:30"},
+        ],
+        "updated_at": now_iso(),
+    }
+
+@app.get("/api/market/score")
+def market_score() -> Dict[str, Any]:
+    snapshot = load_alphaforge_snapshot()
+    metrics = snapshot.get("metrics") or {}
+    asset = snapshot.get("asset") or "XAU/USD"
+    return {
+        "asset": asset,
+        "score": 82,
+        "metrics": {
+            "trade_count": metrics.get("trade_count", 0),
+            "win_rate": metrics.get("win_rate", 0),
+            "total_pnl_pct": metrics.get("total_pnl_pct", 0),
+        },
+        "updated_at": now_iso(),
+    }
 def index() -> FileResponse:
     return FileResponse(ROOT / "index.html")
