@@ -1,285 +1,498 @@
-<!doctype html>
-<html lang="pt">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <title>TradingROOM · Cockpit</title>
-  <meta name="theme-color" content="#0B0E14">
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/app.css?v=ref1">
-</head>
-<body>
-  <div class="app">
-    <aside class="sidebar">
-      <div class="brand">
-        <div class="logo">T</div>
-        <small>TradingROOM</small>
-      </div>
-      <nav class="nav">
-        <a class="nav-link active" data-page="cockpit" href="#"><span class="ico">◆</span><span>Cockpit</span></a>
-        <a class="nav-link" data-page="radar" href="#"><span class="ico">◉</span><span>Radar</span></a>
-        <a class="nav-link" data-page="ia" href="#"><span class="ico">⬡</span><span>Análise IA</span></a>
-        <a class="nav-link" data-page="mentor" href="#"><span class="ico">✦</span><span>Mentor</span></a>
-        <a class="nav-link" data-page="diary" href="#"><span class="ico">◫</span><span>Diário</span></a>
-        <a class="nav-link" data-page="rooms" href="#"><span class="ico">✉</span><span>Sala</span></a>
-        <a class="nav-link" data-page="copy" href="#"><span class="ico">☰</span><span>Copy</span></a>
-        <a class="nav-link" data-page="calendar" href="#"><span class="ico">◫</span><span>Calendário</span></a>
-        <a class="nav-link" data-page="maps" href="#"><span class="ico">⌖</span><span>Mapas</span></a>
-        <a class="nav-link" data-page="resources" href="#"><span class="ico">☰</span><span>Recursos</span></a>
-        <a class="nav-link" data-page="settings" href="#"><span class="ico">⚙</span><span>Config</span></a>
-      </nav>
-      <div class="sidecard">
-        <b>Plano Elite</b>
-        <p>Ativa funcionalidades avançadas.</p>
-      </div>
-    </aside>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:var(--font-sans)}
+.app{background:#0f1117;border-radius:12px;overflow:hidden;min-height:900px;display:flex;flex-direction:column}
+.topnav{background:#161b27;border-bottom:1px solid #2a2f3e;display:flex;align-items:center;padding:0 16px;height:48px;gap:12px}
+.logo{display:flex;align-items:center;gap:8px;margin-right:16px}
+.logo-icon{width:28px;height:28px;background:#d4a017;border-radius:6px;display:flex;align-items:center;justify-content:center}
+.logo-text{font-size:13px;font-weight:500;color:#f0e6c8;letter-spacing:.04em}
+.logo-sub{font-size:9px;color:#8a8fa8;letter-spacing:.08em}
+.search{background:#1e2436;border:1px solid #2a2f3e;border-radius:6px;padding:5px 10px;font-size:11px;color:#8a8fa8;width:160px}
+.ticker-bar{display:flex;gap:20px;flex:1;justify-content:center}
+.tk{display:flex;gap:5px;align-items:baseline}
+.tk-name{font-size:11px;font-weight:500;color:#c8cde0;font-family:var(--font-mono)}
+.tk-price{font-size:11px;color:#8a8fa8;font-family:var(--font-mono)}
+.tk-up{font-size:10px;color:#26c281;font-family:var(--font-mono)}
+.tk-dn{font-size:10px;color:#e05c5c;font-family:var(--font-mono)}
+.nav-icons{display:flex;gap:12px;align-items:center;margin-left:auto}
+.user-pill{display:flex;align-items:center;gap:8px;background:#1e2436;border:1px solid #2a2f3e;border-radius:20px;padding:4px 10px}
+.user-av{width:24px;height:24px;border-radius:50%;background:#d4a017;display:flex;align-items:center;justify-content:center;font-size:9px;color:#0f1117;font-weight:500}
+.user-name{font-size:11px;color:#c8cde0}
+.user-sub{font-size:9px;color:#8a8fa8}
+.body{display:grid;grid-template-columns:175px 1fr;flex:1}
+.sidebar{background:#161b27;border-right:1px solid #2a2f3e;padding:12px 0}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 14px;cursor:pointer}
+.nav-item:hover{background:#1e2436}
+.nav-item.active{background:#1e2a40;border-right:2px solid #3b82f6}
+.nav-icon{font-size:15px;color:#5a6080;width:16px}
+.nav-item.active .nav-icon{color:#60a5fa}
+.nav-label{font-size:12px;font-weight:500;color:#9aa0b8}
+.nav-item.active .nav-label{color:#93c5fd}
+.nav-sub2{font-size:10px;color:#4a5070}
+.nav-item.active .nav-sub2{color:#60a5fa}
+.nav-spacer{flex:1}
+.nav-plan{margin:12px;background:#1a1f30;border:1px solid #2a2f3e;border-radius:8px;padding:10px}
+.plan-label{font-size:10px;color:#d4a017;font-weight:500}
+.plan-sub{font-size:10px;color:#5a6080;margin-top:2px}
+.plan-btn{width:100%;margin-top:8px;background:#d4a017;border:none;border-radius:6px;padding:5px;font-size:11px;font-weight:500;color:#0f1117;cursor:pointer}
+.main{display:flex;flex-direction:column;overflow:hidden}
+.main-header{padding:12px 16px 8px;border-bottom:1px solid #2a2f3e}
+.main-title{font-size:15px;font-weight:500;color:#e8ecf8}
+.main-sub{font-size:11px;color:#5a6080}
+.grid{display:grid;grid-template-columns:1fr 1fr 1fr 200px;gap:8px;padding:10px;flex:1}
+.card{background:#161b27;border:1px solid #2a2f3e;border-radius:8px;padding:12px}
+.card-title{font-size:10px;font-weight:500;color:#5a6080;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.badge-d{background:#3d1a1a;color:#e05c5c;font-size:9px;padding:2px 6px;border-radius:10px;font-weight:500}
+.badge-w{background:#3d2e10;color:#d4a017;font-size:9px;padding:2px 6px;border-radius:10px;font-weight:500}
+.badge-s{background:#0d2e1e;color:#26c281;font-size:9px;padding:2px 6px;border-radius:10px;font-weight:500}
+.badge-i{background:#0d1e3d;color:#60a5fa;font-size:9px;padding:2px 6px;border-radius:10px;font-weight:500}
+.score-row{display:flex;align-items:center;gap:7px;padding:4px 0;border-bottom:1px solid #1e2436}
+.score-row:last-child{border:none}
+.score-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.score-name{font-size:11px;color:#c8cde0;flex:1}
+.score-track{width:50px;height:3px;background:#1e2436;border-radius:2px;overflow:hidden}
+.score-fill{height:100%;border-radius:2px}
+.score-num{font-size:11px;font-weight:500;font-family:var(--font-mono);width:22px;text-align:right}
+.radar-center{display:flex;justify-content:center;padding:4px 0}
+.liq-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #1e2436}
+.liq-row:last-child{border:none}
+.liq-icon{width:20px;height:20px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
+.liq-price{font-size:15px;font-weight:500;font-family:var(--font-mono)}
+.liq-label{font-size:10px;color:#5a6080}
+.news-row{padding:6px 0;border-bottom:1px solid #1e2436}
+.news-row:last-child{border:none}
+.news-time{font-size:10px;color:#5a6080;font-family:var(--font-mono)}
+.news-text{font-size:11px;color:#c8cde0;line-height:1.4;margin-top:1px}
+.chart-card{grid-column:span 2;background:#161b27;border:1px solid #2a2f3e;border-radius:8px;padding:12px}
+.chart-info{display:flex;gap:10px;font-size:10px;font-family:var(--font-mono);color:#5a6080;margin-bottom:8px}
+.mentor-box{background:#0d1e3d;border:1px solid #1e3a5c;border-radius:7px;padding:10px;margin-top:8px}
+.mentor-tip{display:flex;gap:6px;font-size:11px;color:#93c5fd;padding:3px 0;line-height:1.3}
+.donut-wrap{display:flex;align-items:center;gap:12px;justify-content:center;padding:6px 0}
+.perf-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid #1e2436}
+.perf-row:last-child{border:none}
+.perf-lbl{font-size:11px;color:#5a6080}
+.perf-val{font-size:12px;font-weight:500}
+.setup-row{display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid #1e2436}
+.setup-row:last-child{border:none}
+.setup-n{font-size:10px;color:#5a6080;width:12px}
+.setup-name{font-size:11px;color:#c8cde0;flex:1}
+.setup-wr{font-size:11px;font-weight:500;font-family:var(--font-mono)}
+.setup-cnt{font-size:10px;color:#5a6080;width:24px;text-align:right}
+.trader-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #1e2436}
+.trader-row:last-child{border:none}
+.trader-av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;flex-shrink:0}
+.trader-name{font-size:12px;font-weight:500;color:#c8cde0}
+.trader-risk{font-size:10px;color:#5a6080}
+.follow-btn{font-size:10px;padding:3px 8px;background:#1e2a40;border:1px solid #3b82f6;border-radius:5px;color:#60a5fa;cursor:pointer}
+.chat-msg{display:flex;gap:7px;padding:5px 0;border-bottom:1px solid #1e2436}
+.chat-msg:last-child{border:none}
+.chat-av{width:22px;height:22px;border-radius:50%;background:#1e2436;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;color:#8a8fa8;flex-shrink:0}
+.chat-name{font-size:10px;font-weight:500;color:#c8cde0}
+.chat-text{font-size:10px;color:#8a8fa8;line-height:1.3}
+.sim-stat{display:flex;justify-content:space-between;font-size:11px;color:#8a8fa8;padding:3px 0}
+.sim-val{font-size:11px;font-weight:500;color:#e8ecf8}
+.hm{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.hm-cell{height:12px;border-radius:2px}
+.spark{display:flex;align-items:flex-end;gap:1px;height:36px;margin-top:8px}
+.action-btn{width:100%;margin-top:8px;background:#1e2436;border:1px solid #2a2f3e;border-radius:6px;padding:6px;font-size:11px;color:#8a8fa8;cursor:pointer;text-align:center}
+.action-btn:hover{border-color:#3b82f6;color:#60a5fa}
+.clk{font-size:10px;font-family:var(--font-mono);color:#5a6080}
+</style>
 
-    <main class="main">
-      <header class="header">
-        <div class="headerLeft">
-          <div>
-            <div class="brandTitle">TradingROOM</div>
-            <div class="brandSub">TRADING ECOSYSTEM</div>
-          </div>
-        </div>
-        <div class="search"><span class="ico" style="opacity:.7">⌕</span><input id="searchAsset" type="search" placeholder="Procurar ativo..." autocomplete="off"></div>
-        <div class="ticker" id="tickerTape">
-          <div><b>BTCUSD</b> <span class="ok">+1.27%</span></div>
-          <div><b>EURUSD</b> <span class="bad">-0.21%</span></div>
-          <div><b>NAS100</b> <span class="ok">+0.74%</span></div>
-          <div><b>US30</b> <span class="bad">-0.35%</span></div>
-          <div><b>XAUUSD</b> <span class="ok">+0.63%</span></div>
-        </div>
-        <div class="topActions">
-          <button class="iconBtn" title="Notificações"><span class="ico">🔔</span><span class="badge danger" id="notifBadge" style="display:inline-block">12</span></button>
-          <button class="iconBtn" title="Configurações" onclick="goSettings()"><span class="ico">⚙</span></button>
-          <div class="profile">
-            <div class="avatar">I</div>
-            <div class="profileInfo"><strong>Inês Traders</strong><small>Conta Real · MT5</small></div>
-          </div>
-        </div>
-      </header>
+<h2 class="sr-only">Hermes Trading Ecosystem — cockpit dark mode com score de mercado, radar de manipulação, liquidez, mentor IA, copy trading e performance</h2>
 
-      <section id="cockpit" class="page">
-        <div class="kicker">COCKPIT • CENTRO DE GUERRA</div>
-        <div class="subtitle">Visão global do mercado em tempo real · modo paper</div>
+<div class="app">
 
-        <div class="row1" style="margin-top:10px">
-          <div class="card cockpitCard">
-            <div class="sectionHead">Score de Mercado</div>
-            <div id="marketScore">
-              <div class="scoreRow"><span>XAUUSD</span><div class="scorePill ok">92</div><b class="ok">Alto</b></div>
-              <div class="scoreRow"><span>BTCUSD</span><div class="scorePill ok">88</div><b class="ok">Alto</b></div>
-              <div class="scoreRow"><span>NAS100</span><div class="scorePill warn">76</div><b class="warn">Médio</b></div>
-              <div class="scoreRow"><span>EURUSD</span><div class="scorePill">45</div><b>Baixo</b></div>
-              <div class="scoreRow"><span>GBPUSD</span><div class="scorePill">40</div><b>Baixo</b></div>
-              <div class="scoreRow"><span>US30</span><div class="scorePill bad">38</div><b class="bad">Baixo</b></div>
-            </div>
-            <button class="btn small" style="margin-top:12px;width:100%">Ver todos</button>
-          </div>
+<div class="topnav">
+  <div class="logo">
+    <div class="logo-icon"><i class="ti ti-feather" style="font-size:14px;color:#0f1117" aria-hidden="true"></i></div>
+    <div><div class="logo-text">HERMES</div><div class="logo-sub">TRADING ECOSYSTEM</div></div>
+  </div>
+  <input class="search" placeholder="Procurar ativo...">
+  <div class="ticker-bar">
+    <div class="tk"><span class="tk-name">BTCUSD</span><span class="tk-up">+1.27%</span><span class="tk-price">68,243.0</span></div>
+    <div class="tk"><span class="tk-name">XAUUSD</span><span class="tk-up">+0.63%</span><span class="tk-price">2,349.57</span></div>
+    <div class="tk"><span class="tk-name">EURUSD</span><span class="tk-dn">-0.21%</span><span class="tk-price">1.08221</span></div>
+    <div class="tk"><span class="tk-name">NAS100</span><span class="tk-up">+0.74%</span><span class="tk-price">18,765.4</span></div>
+    <div class="tk"><span class="tk-name">US30</span><span class="tk-up">+0.35%</span><span class="tk-price">39,512.3</span></div>
+  </div>
+  <div class="nav-icons">
+    <i class="ti ti-bell" style="font-size:16px;color:#5a6080" aria-hidden="true"></i>
+    <i class="ti ti-mail" style="font-size:16px;color:#5a6080" aria-hidden="true"></i>
+    <i class="ti ti-settings" style="font-size:16px;color:#5a6080" aria-hidden="true"></i>
+    <div class="user-pill">
+      <div class="user-av">IT</div>
+      <div><div class="user-name">Inês Traders</div><div class="user-sub">Conta Real · MT5</div></div>
+    </div>
+    <span class="clk" id="clk">11:45:15</span>
+  </div>
+</div>
 
-          <div class="card manipCard" id="manipCard">
-            <div class="sectionHead">Radar de Manipulação</div>
-            <div class="manipBodyRef">
-              <div class="manipGaugeWrap"><div class="manipGaugeRef">78%</div></div>
-              <div class="manipMeta">
-                <div class="manipBig">BTCUSD</div>
-                <div class="manipSub">Probabilidade elevada de stop hunt</div>
-                <div class="manipMini">Score: <b id="manipScoreRef">78</b></div>
-              </div>
-            </div>
-            <button class="btn small" style="margin-top:10px;width:100%">Ver Zonas</button>
-          </div>
+<div class="body">
+<div class="sidebar">
+  <div class="nav-item active">
+    <i class="ti ti-layout-dashboard nav-icon" aria-hidden="true"></i>
+    <div><div class="nav-label">Cockpit</div><div class="nav-sub2">Centro de Guerra</div></div>
+  </div>
+  <div class="nav-item" onclick="sendPrompt(\'Abre o Radar de Mercado do Hermes — manipulação e liquidez\')">
+    <i class="ti ti-radar nav-icon" aria-hidden="true"></i>
+    <div><div class="nav-label">Radar de Mercado</div><div class="nav-sub2">Manipulação & Liquidez</div></div>
+  </div>
+  <div class="nav-item" onclick="sendPrompt(\'Abre Análise IA — cenários e probabilidades\')">
+    <i class="ti ti-brain nav-icon" aria-hidden="true"></i>
+    <div><div class="nav-label">Análise IA</div><div class="nav-sub2">Cenários & Probabilidades</div></div>
+  </div>
+  <div class="nav-item" onclick="sendPrompt(\'Abre o Mentor IA — análise da minha performance pessoal\')">
+    <i class="ti ti-user-heart nav-icon" aria-hidden="true"></i>
+    <div><div class="nav-label">Mentor</div><div class="nav-sub2">IA Pessoal</div></div>
+  </div>
+  <div class="nav-item" onclick="sendPrompt(\'Abre o Diário de Trading completo\')">
+    <i class="ti ti-notebook nav-icon" aria-hidden="true"></i>
+    <div><div class="nav-label">Diário de Trading</div><div class="nav-sub2">Performance & Estatísticas</div></div>
+  </div>
+  <div class="nav-item" onclick="sendPrompt(\'Abre a Sala de Trading com traders online\')">
+    <i class="ti ti-messages nav-icon" aria-hidden="true"></i>
+    <div><div class="nav-label">Sala de Trading</div><div class="nav-sub2">Trading Room</div></div>
+  </div>
+  <div class="nav-item" onclick="sendPrompt(\'Abre Copy Trading — melhores traders\')">
+    <i class="ti ti-copy nav-icon" aria-hidden="true"></i>
+    <div><div class="nav-label">Copy Trading</div><div class="nav-sub2">Sinais & Estratégias</div></div>
+  </div>
+  <div class="nav-item">
+    <i class="ti ti-calendar nav-icon" aria-hidden="true"></i>
+    <div><div class="nav-label">Calendário</div><div class="nav-sub2">Económico</div></div>
+  </div>
+  <div class="nav-item">
+    <i class="ti ti-world nav-icon" aria-hidden="true"></i>
+    <div><div class="nav-label">Mapas</div><div class="nav-sub2">Correlação Global</div></div>
+  </div>
+  <div class="nav-item">
+    <i class="ti ti-books nav-icon" aria-hidden="true"></i>
+    <div><div class="nav-label">Recursos</div><div class="nav-sub2">Aprender & Evoluir</div></div>
+  </div>
+  <div class="nav-item">
+    <i class="ti ti-settings nav-icon" aria-hidden="true"></i>
+    <div><div class="nav-label">Configurações</div><div class="nav-sub2">Conta & Preferências</div></div>
+  </div>
+  <div class="nav-plan">
+    <div class="plan-label">Plano Elite</div>
+    <div class="plan-sub">Renova em 24 dias</div>
+    <button class="plan-btn">Gerir Plano</button>
+  </div>
+</div>
 
-          <div class="card liquidezCard">
-            <div class="sectionHead">Liquidez</div>
-            <div class="liqBlock"><span class="liqLabel">Acima</span><div class="liqValue ok">68,250.0</div></div>
-            <div class="liqBlock" style="margin-top:10px"><span class="liqLabel">Abaixo</span><div class="liqValue bad">66,800.0</div></div>
-            <button class="btn small" style="margin-top:12px;width:100%">Ver Mapa</button>
-          </div>
-
-          <div class="card newsCard">
-            <div class="sectionHead">Notícias de Impacto</div>
-            <div class="newsList">
-              <div class="newsItem"><div class="newsTime">14:30</div><div class="newsBody"><div class="newsTitle">CPI m/m <span class="badge warn">ALTO</span></div><div class="newsMeta">Em 45m</div></div></div>
-              <div class="newsItem"><div class="newsTime">16:00</div><div class="newsBody"><div class="newsTitle">US Fed Chair Powell Speaks <span class="badge warn">ALTO</span></div><div class="newsMeta">Em 2h 15m</div></div></div>
-              <div class="newsItem"><div class="newsTime">09:30</div><div class="newsBody"><div class="newsTitle">GBP GDP m/m <span class="badge info">MÉDIO</span></div><div class="newsMeta">Amanhã</div></div></div>
-            </div>
-            <button class="btn small" style="margin-top:12px;width:100%">Ver Calendário</button>
-          </div>
-
-          <div class="card mapCard">
-            <div class="sectionHead">Mapa Global de Traders</div>
-            <div class="mapHeader">BTCUSD <span class="mini" style="color:var(--ink-tertiary)">Dados em tempo real</span></div>
-            <div class="donutWrap">
-              <div class="donut">
-                <div class="donutCenter"><div class="donutPct ok">56%</div><div class="donutLabel">Compras</div></div>
-              </div>
-              <div class="donut">
-                <div class="donutCenter"><div class="donutPct bad">44%</div><div class="donutLabel">Vendidos</div></div>
-              </div>
-            </div>
-            <div class="mapStats">
-              <div class="mapStat"><span>Lucro Médio</span><b class="ok">1.82%</b></div>
-              <div class="mapStat"><span>Perda Média</span><b class="bad">-1.35%</b></div>
-            </div>
-            <button class="btn small" style="margin-top:12px;width:100%">Ver todos ativos</button>
-          </div>
-        </div>
-
-        <div class="row2">
-          <div class="card chartCard" style="padding:0;overflow:hidden">
-            <div class="chartHeadWrap">
-              <div class="chartTitle"><strong id="chartSymbol">BTCUSD</strong><span class="mini" style="margin-left:8px"> · 15m · Binance</span><span class="chartStats mini" id="chartStats" style="margin-left:8px">O 68,210.5 H 68,255.0 L 68,190.0 C 68,243.0 +32.5 (+0.05%)</span></div>
-              <div class="chartBadges"><span class="badge info">15m</span><span class="badge ok">LIVE</span></div>
-            </div>
-            <div class="tradingview-widget-container" style="height:420px"><div id="tradingview_widget" style="height:100%;width:100%"></div></div>
-            <div class="chartLevels" id="chartLevels">
-              <span style="color:#10b981;background:#10b98114;border:1px solid #10b98133;padding:2px 8px;border-radius:6px;font-size:11px;font-family:'JetBrains Mono',monospace">68,200.0 Zona de Interesse</span>
-              <span style="color:#64748B;background:#0B0E1433;border:1px solid #1E293B;padding:2px 8px;border-radius:6px;font-size:11px;font-family:'JetBrains Mono',monospace">68,500.0</span>
-              <span style="color:#EF4444;background:#EF444414;border:1px solid #EF444433;padding:2px 8px;border-radius:6px;font-size:11px;font-family:'JetBrains Mono',monospace">66,800.0 Zona</span>
-            </div>
-          </div>
-          <div class="card levelsCard">
-            <div class="sectionHead">Zona de Interesse</div>
-            <div class="levelRow"><span>69,000.0</span><span style="color:#64748B"></span></div>
-            <div class="levelRow"><span>68,500.0</span><span style="color:#64748B"></span></div>
-            <div class="levelRow"><span>68,200.0</span><span style="color:#10B981;font-weight:700">Zona</span></div>
-            <div class="levelRow"><span>68,000.0</span><span style="color:#64748B"></span></div>
-            <div class="levelRow"><span>67,500.0</span><span style="color:#64748B"></span></div>
-            <div class="levelRow"><span>66,800.0</span><span style="color:#EF4444;font-weight:700">Zona</span></div>
-            <div class="levelRow"><span>66,500.0</span><span style="color:#64748B"></span></div>
-            <div class="levelRow"><span>66,000.0</span><span style="color:#64748B"></span></div>
-          </div>
-        </div>
-
-        <div class="row3">
-          <div class="card simCard">
-            <div class="sectionHead">Simulador de Cenários</div>
-            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px">
-              <div class="mini">BTCUSD</div>
-              <div class="mini">Analisando 10,000 cenários</div>
-            </div>
-            <div class="simGrid">
-              <div class="simItem"><div class="simValue ok">62%</div><div class="simLabel">Chance TP</div></div>
-              <div class="simItem"><div class="simValue bad">38%</div><div class="simLabel">Chance SL</div></div>
-              <div class="simItem"><div class="simValue">1.65</div><div class="simLabel">RR Esperado</div></div>
-              <div class="simItem"><div class="simValue">3h 25m</div><div class="simLabel">Duração Média</div></div>
-            </div>
-            <button class="btn small" style="margin-top:12px;width:100%">Ver Cenários</button>
-          </div>
-
-          <div class="card diaryCard">
-            <div class="sectionHead">Diário de Trading</div>
-            <div class="mini">Resumo rápido</div>
-            <div class="calHeat" style="margin-top:10px">
-              <div class="c"></div><div class="c"></div><div class="c ok"></div><div class="c bad"></div><div class="c"></div><div class="c ok"></div><div class="c"></div>
-              <div class="c ok"></div><div class="c"></div><div class="c"></div><div class="c bad"></div><div class="c"></div><div class="c ok"></div><div class="c"></div>
-              <div class="c"></div><div class="c ok"></div><div class="c"></div><div class="c warn"></div><div class="c"></div><div class="c ok"></div><div class="c"></div>
-              <div class="c ok"></div><div class="c bad"></div><div class="c"></div><div class="c ok"></div><div class="c ok"></div><div class="c warn"></div><div class="c"></div>
-              <div class="c"></div><div class="c"></div><div class="c ok"></div><div class="c"></div><div class="c"></div><div class="c ok"></div><div class="c"></div>
-            </div>
-            <button class="btn small" style="margin-top:12px;width:100%">Ver Diário</button>
-          </div>
-
-          <div class="card topSetupsCard">
-            <div class="sectionHead">Top Setups (30 Dias)</div>
-            <div class="setupList">
-              <div class="setupItem"><div><div class="setupName">Liquidity Sweep + BOS</div><div class="setupMeta">32 trades</div></div><div class="setupPct ok">68.7%</div></div>
-              <div class="setupItem"><div><div class="setupName">FVG + Order Block</div><div class="setupMeta">28 trades</div></div><div class="setupPct ok">64.2%</div></div>
-              <div class="setupItem"><div><div class="setupName">Breaker Block</div><div class="setupMeta">22 trades</div></div><div class="setupPct ok">61.1%</div></div>
-              <div class="setupItem"><div><div class="setupName">Trend Continuation</div><div class="setupMeta">19 trades</div></div><div class="setupPct ok">57.8%</div></div>
-            </div>
-            <button class="btn small" style="margin-top:12px;width:100%">Ver Todos</button>
-          </div>
-
-          <div class="card copyCard">
-            <div class="sectionHead">Calculadora de Lotes</div>
-            <div class="lotGrid">
-              <div><div class="mini">Banca</div><input id="lotBanca" class="inputDark" type="number" value="12450"></div>
-              <div><div class="mini">Risco (%)</div><div style="display:flex;gap:6px;align-items:center"><input id="lotRisco" class="inputDark" type="number" value="1"><label class="checkline" style="font-size:10px"><input id="lotDefault" type="checkbox" checked> Default 1%</label></div></div>
-              <div><div class="mini">Distância SL</div><input id="lotSl" class="inputDark" type="number" value="120"></div>
-              <div><div class="mini">Valor do ponto</div><input id="lotPonto" class="inputDark" type="number" value="1"></div>
-            </div>
-            <button class="btn primary small" style="margin-top:10px;width:100%" onclick="calcLot()">Calcular lote</button>
-            <div class="lotResult"><span>Risco absoluto</span><b id="resRiscoAbs" class="mono">$124.50</b></div>
-            <div class="lotResult"><span>Lote sugerido</span><b id="resLote" class="mono">1.03 lotes</b></div>
-          </div>
-
-          <div class="card perfCard">
-            <div class="sectionHead">Performance (30 Dias)</div>
-            <div class="perfBig ok">+€ 2,352.54</div>
-            <div class="mini" style="margin-top:2px">Lucro Líquido</div>
-            <div class="perfGrid">
-              <div class="perfItem"><div class="perfVal mono">62.4%</div><div class="perfKey mini">Win Rate</div></div>
-              <div class="perfItem"><div class="perfVal mono">1.85</div><div class="perfKey mini">Profit Factor</div></div>
-              <div class="perfItem"><div class="perfVal mono">128</div><div class="perfKey mini">Trades</div></div>
-            </div>
-            <canvas id="miniEquity" height="90" style="width:100%;margin-top:8px"></canvas>
-            <button class="btn small" style="margin-top:10px;width:100%">Ver Diário Completo</button>
-          </div>
-        </div>
-
-        <div class="row4">
-          <div class="card chatCard">
-            <div class="chatRow">
-              <div style="font-weight:700;font-size:12px;color:#94A3B8;width:110px">SALA DE TRADING</div>
-              <div class="chatBox" id="chatBox">
-                <div class="chatBubble"><strong>AlphaTrader:</strong> GOLD a reagir na zona de liquidez como esperado! ✅</div>
-                <div class="chatBubble"><strong>Inês Traders:</strong> Concordo. Estou a ver estruturas de reversão.</div>
-                <div class="chatBubble"><strong>MarketMaster:</strong> Cuidado com a notícia às 14:30!</div>
-              </div>
-              <div class="chatFoot"><input id="chatInput" placeholder="Escrever mensagem..."><button class="btn primary" onclick="sendChat()">Enviar</button></div>
-            </div>
-          </div>
-          <div class="card onlineCard">
-            <div class="sectionHead">Membros Online</div>
-            <div class="onlineCount">1,248</div>
-            <div class="avs"><div class="av">◆</div><div class="av">A</div><div class="av">K</div><div class="av more">+1242</div></div>
-          </div>
-        </div>
-      </section>
-
-      <section id="settingsPage" class="page" style="display:none"><div class="kicker">CONFIGURAÇÕES</div><div class="card" style="margin-top:12px"><div class="sectionHead">Geral</div><label class="checkline"><input type="checkbox" checked> Atualizar dados em tempo real</label><label class="checkline" style="margin-top:8px"><input type="checkbox"> Modo foco sem alertas</label></div><div class="card" style="margin-top:12px"><div class="sectionHead">Plano Elite</div><p class="mini">Plano atual: <b>Ativo</b></p><button class="btn primary full" style="margin-top:8px">Gerir Subscrição</button></div></section>
-      <section id="roomsPage" class="page" style="display:none"><p class="mini">Sala de Trading em ecrã único.</p></section>
-      <section id="mentorPage" class="page" style="display:none"><p class="mini">Mentor IA simplificado.</p></section>
-      <section id="diaryPage" class="page" style="display:none"><p class="mini">Diário de Trading.</p></section>
-      <section id="planPage" class="page" style="display:none"><p class="mini">Plano Elite.</p></section>
-      <section id="radarPage" class="page" style="display:none"><p class="mini">Radar de Mercado.</p></section>
-      <section id="iaPage" class="page" style="display:none"><p class="mini">Análise IA.</p></section>
-      <section id="calendarPage" class="page" style="display:none"><p class="mini">Calendário Económico.</p></section>
-      <section id="mapsPage" class="page" style="display:none"><p class="mini">Mapas.</p></section>
-      <section id="resourcesPage" class="page" style="display:none"><p class="mini">Recursos.</p></section>
-    </main>
+<div class="main">
+  <div class="main-header">
+    <div style="display:flex;align-items:center;gap:8px">
+      <span class="main-title">COCKPIT</span>
+      <span style="color:#5a6080;font-size:14px">·</span>
+      <span style="font-size:13px;color:#5a6080">Centro de Guerra</span>
+    </div>
+    <div class="main-sub">Visão global do mercado em tempo real</div>
   </div>
 
-  <script src="assets/app.js?v=ref2"></script>
-  <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-  <script type="text/javascript">
-    window._tvWidget = null;
-    (function(){
-      function initTV(){
-        if (!window.TradingView || !window.TradingView.widget) { setTimeout(initTV, 120); return; }
-        try {
-          window._tvWidget = new TradingView.widget({
-            autosize: true,
-            symbol: "BINANCE:BTCUSDT",
-            interval: "15",
-            timezone: "Etc/UTC",
-            theme: "dark",
-            style: "1",
-            locale: "pt",
-            enable_publishing: false,
-            hide_top_toolbar: false,
-            container_id: "tradingview_widget"
-          });
-        } catch (e) { console.warn(e); }
-      }
-      initTV();
-    })();
-  </script>
-</body>
-</html>
+  <div class="grid">
+
+    <div class="card">
+      <div class="card-title"><i class="ti ti-chart-radar" style="font-size:13px" aria-hidden="true"></i> score de mercado</div>
+      <div class="score-row">
+        <div class="score-dot" style="background:#d4a017"></div>
+        <span class="score-name">XAUUSD</span>
+        <div class="score-track"><div class="score-fill" style="width:92%;background:#26c281"></div></div>
+        <span class="score-num" style="color:#26c281">92</span>
+      </div>
+      <div class="score-row">
+        <div class="score-dot" style="background:#f7931a"></div>
+        <span class="score-name">BTCUSD</span>
+        <div class="score-track"><div class="score-fill" style="width:88%;background:#26c281"></div></div>
+        <span class="score-num" style="color:#26c281">88</span>
+      </div>
+      <div class="score-row">
+        <div class="score-dot" style="background:#60a5fa"></div>
+        <span class="score-name">NAS100</span>
+        <div class="score-track"><div class="score-fill" style="width:76%;background:#26c281"></div></div>
+        <span class="score-num" style="color:#26c281">76</span>
+      </div>
+      <div class="score-row">
+        <div class="score-dot" style="background:#4a5ab0"></div>
+        <span class="score-name">EURUSD</span>
+        <div class="score-track"><div class="score-fill" style="width:45%;background:#d4a017"></div></div>
+        <span class="score-num" style="color:#d4a017">45</span>
+      </div>
+      <div class="score-row">
+        <div class="score-dot" style="background:#012169"></div>
+        <span class="score-name">GBPUSD</span>
+        <div class="score-track"><div class="score-fill" style="width:40%;background:#d4a017"></div></div>
+        <span class="score-num" style="color:#d4a017">40</span>
+      </div>
+      <div class="score-row">
+        <div class="score-dot" style="background:#b22234"></div>
+        <span class="score-name">US30</span>
+        <div class="score-track"><div class="score-fill" style="width:38%;background:#d4a017"></div></div>
+        <span class="score-num" style="color:#d4a017">38</span>
+      </div>
+      <button class="action-btn" onclick="sendPrompt(\'Explica o score de mercado do Hermes — porque é que o XAUUSD lidera?\')">Ver todos ↗</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><i class="ti ti-radar-2" style="font-size:13px" aria-hidden="true"></i> radar de manipulação <span class="badge-d" style="margin-left:auto">● live</span></div>
+      <div style="font-size:10px;color:#5a6080;margin-bottom:6px">Probabilidade elevada de stop hunt em:</div>
+      <div style="font-size:20px;font-weight:500;color:#e05c5c;margin-bottom:8px">BTCUSD</div>
+      <div class="radar-center">
+        <svg width="110" height="110" viewBox="0 0 110 110" role="img" aria-label="Radar de manipulação com 3 zonas detetadas">
+          <circle cx="55" cy="55" r="50" fill="none" stroke="#e05c5c" stroke-width="0.5" opacity="0.2"/>
+          <circle cx="55" cy="55" r="36" fill="none" stroke="#e05c5c" stroke-width="0.5" opacity="0.35"/>
+          <circle cx="55" cy="55" r="22" fill="none" stroke="#e05c5c" stroke-width="0.5" opacity="0.5"/>
+          <circle cx="55" cy="55" r="8" fill="#e05c5c" opacity="0.15"/>
+          <circle cx="55" cy="55" r="3" fill="#e05c5c"/>
+          <line x1="55" y1="5" x2="55" y2="105" stroke="#e05c5c" stroke-width="0.3" opacity="0.15"/>
+          <line x1="5" y1="55" x2="105" y2="55" stroke="#e05c5c" stroke-width="0.3" opacity="0.15"/>
+          <circle cx="76" cy="34" r="5" fill="#e05c5c" opacity="0.85"/>
+          <circle cx="32" cy="70" r="4" fill="#d4a017" opacity="0.8"/>
+          <circle cx="82" cy="68" r="4" fill="#e05c5c" opacity="0.65"/>
+        </svg>
+      </div>
+      <div style="font-size:10px;color:#5a6080;text-align:center;margin-bottom:8px">3 zonas de liquidez detetadas</div>
+      <button class="action-btn" onclick="sendPrompt(\'Mostra todas as zonas de manipulação detetadas pelo Hermes agora\')">Ver zonas ↗</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><i class="ti ti-droplet" style="font-size:13px" aria-hidden="true"></i> liquidez</div>
+      <div style="font-size:10px;color:#5a6080;margin-bottom:8px">Zonas de liquidez detetadas</div>
+      <div class="liq-row">
+        <div class="liq-icon" style="background:#0d2e1e"><i class="ti ti-arrow-up" style="font-size:11px;color:#26c281" aria-hidden="true"></i></div>
+        <div>
+          <div class="liq-price" style="color:#26c281">68,250.0</div>
+          <div class="liq-label">Acima · stop hunts prováveis</div>
+        </div>
+      </div>
+      <div class="liq-row">
+        <div class="liq-icon" style="background:#3d1a1a"><i class="ti ti-arrow-down" style="font-size:11px;color:#e05c5c" aria-hidden="true"></i></div>
+        <div>
+          <div class="liq-price" style="color:#e05c5c">66,800.0</div>
+          <div class="liq-label">Abaixo · suporte chave</div>
+        </div>
+      </div>
+      <svg width="100%" height="70" viewBox="0 0 220 70" style="margin-top:8px" role="img" aria-label="Mini gráfico BTCUSD com zonas de liquidez">
+        <line x1="0" y1="12" x2="220" y2="12" stroke="#26c281" stroke-width="0.6" stroke-dasharray="3,2" opacity="0.6"/>
+        <text x="2" y="10" font-size="7" fill="#26c281">68,250</text>
+        <line x1="0" y1="60" x2="220" y2="60" stroke="#e05c5c" stroke-width="0.6" stroke-dasharray="3,2" opacity="0.6"/>
+        <text x="2" y="68" font-size="7" fill="#e05c5c">66,800</text>
+        <g id="mini-c"></g>
+      </svg>
+      <button class="action-btn" onclick="sendPrompt(\'Mostra o mapa completo de liquidez para todos os ativos\')">Ver mapa ↗</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><i class="ti ti-news" style="font-size:13px" aria-hidden="true"></i> notícias de impacto</div>
+      <div class="news-row">
+        <div style="display:flex;align-items:center;gap:5px;margin-bottom:2px">
+          <span class="news-time">14:30</span>
+          <span class="badge-d">ALTO</span>
+          <span style="font-size:9px;color:#5a6080">Em 45min</span>
+        </div>
+        <div class="news-text">CPI m/m — inflação EUA</div>
+      </div>
+      <div class="news-row">
+        <div style="display:flex;align-items:center;gap:5px;margin-bottom:2px">
+          <span class="news-time">16:00</span>
+          <span class="badge-d">ALTO</span>
+          <span style="font-size:9px;color:#5a6080">Em 2h 15m</span>
+        </div>
+        <div class="news-text">Fed Chair Powell — política monetária</div>
+      </div>
+      <div class="news-row">
+        <div style="display:flex;align-items:center;gap:5px;margin-bottom:2px">
+          <span class="news-time">09:30</span>
+          <span class="badge-w">MÉDIO</span>
+          <span style="font-size:9px;color:#5a6080">Amanhã</span>
+        </div>
+        <div class="news-text">GBP GDP m/m — UK</div>
+      </div>
+      <button class="action-btn" onclick="sendPrompt(\'Abre o calendário económico completo desta semana\')">Ver calendário ↗</button>
+    </div>
+
+    <div class="chart-card">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <span style="font-size:13px;font-weight:500;color:#e8ecf8">BTCUSD · 15m · Binance</span>
+        <span class="badge-i">BOS detetado</span>
+        <div style="margin-left:auto;display:flex;gap:4px">
+          <span style="font-size:10px;padding:2px 6px;background:#1e2436;color:#60a5fa;border-radius:4px;cursor:pointer">15m</span>
+          <span style="font-size:10px;padding:2px 6px;color:#5a6080;cursor:pointer">1H</span>
+          <span style="font-size:10px;padding:2px 6px;color:#5a6080;cursor:pointer">4H</span>
+          <span style="font-size:10px;padding:2px 6px;color:#5a6080;cursor:pointer">D1</span>
+        </div>
+      </div>
+      <div class="chart-info">
+        <span>O 68,210.5</span><span>H 68,255.0</span><span>L 68,190.0</span>
+        <span style="color:#26c281">C 68,243.0 +32.5 (+0.05%)</span>
+      </div>
+      <svg width="100%" height="140" viewBox="0 0 440 140" preserveAspectRatio="none" role="img" aria-label="Gráfico de velas BTCUSD 15 minutos com zonas de liquidez">
+        <rect x="0" y="0" width="440" height="140" fill="#0d111c" rx="4"/>
+        <line x1="0" y1="18" x2="440" y2="18" stroke="#26c281" stroke-width="0.6" stroke-dasharray="4,3" opacity="0.5"/>
+        <text x="340" y="14" font-size="8" fill="#26c281">Liquidez Acima 68,250</text>
+        <line x1="0" y1="118" x2="440" y2="118" stroke="#e05c5c" stroke-width="0.6" stroke-dasharray="4,3" opacity="0.5"/>
+        <text x="340" y="132" font-size="8" fill="#e05c5c">Liquidez Abaixo 66,800</text>
+        <text x="260" y="82" font-size="8" fill="#60a5fa">Zona de Interesse</text>
+        <g id="main-c"></g>
+      </svg>
+      <div style="display:flex;gap:14px;margin-top:6px;font-size:10px;color:#5a6080;flex-wrap:wrap">
+        <span>POI: <span style="color:#60a5fa">68,190</span></span>
+        <span>SL: <span style="color:#e05c5c">67,950</span></span>
+        <span>TP: <span style="color:#26c281">68,600</span></span>
+        <span style="margin-left:auto">vol: 42.3K · spread: 0.8 · 11:45:15 UTC+0</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><i class="ti ti-user-heart" style="font-size:13px" aria-hidden="true"></i> mentor IA</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <div style="width:30px;height:30px;border-radius:50%;background:#1e2436;border:1px solid #d4a017;display:flex;align-items:center;justify-content:center;font-size:14px">H</div>
+        <div>
+          <div style="font-size:12px;font-weight:500;color:#e8ecf8">Olá, Inês!</div>
+          <div style="font-size:10px;color:#5a6080">Com base na tua performance recente</div>
+        </div>
+      </div>
+      <div class="mentor-box">
+        <div class="mentor-tip"><i class="ti ti-arrow-right" style="font-size:11px;flex-shrink:0;margin-top:1px" aria-hidden="true"></i>Evita operar nas sextas-feiras</div>
+        <div class="mentor-tip"><i class="ti ti-arrow-right" style="font-size:11px;flex-shrink:0;margin-top:1px" aria-hidden="true"></i>Melhores resultados: 14h-18h Londres</div>
+        <div class="mentor-tip"><i class="ti ti-arrow-right" style="font-size:11px;flex-shrink:0;margin-top:1px" aria-hidden="true"></i>Reduz size em setups com news</div>
+      </div>
+      <button class="action-btn" onclick="sendPrompt(\'Quero análise completa do Mentor IA — o que devo melhorar?\')">Ver análise completa ↗</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><i class="ti ti-world-pin" style="font-size:13px" aria-hidden="true"></i> mapa global · BTCUSD</div>
+      <div class="donut-wrap">
+        <svg width="80" height="80" viewBox="0 0 80 80" role="img" aria-label="56% comprados, 44% vendidos">
+          <circle cx="40" cy="40" r="28" fill="none" stroke="#26c281" stroke-width="12" stroke-dasharray="98.5 175.9" stroke-dashoffset="44" transform="rotate(-90 40 40)"/>
+          <circle cx="40" cy="40" r="28" fill="none" stroke="#e05c5c" stroke-width="12" stroke-dasharray="77.4 175.9" stroke-dashoffset="-54.5" transform="rotate(-90 40 40)"/>
+          <text x="40" y="37" text-anchor="middle" font-size="11" font-weight="500" fill="#e8ecf8">56%</text>
+          <text x="40" y="48" text-anchor="middle" font-size="8" fill="#5a6080">long</text>
+        </svg>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#8a8fa8"><div style="width:8px;height:8px;border-radius:50%;background:#26c281"></div><span style="font-size:14px;font-weight:500;color:#26c281">56%</span> Comprados</div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#8a8fa8"><div style="width:8px;height:8px;border-radius:50%;background:#e05c5c"></div><span style="font-size:14px;font-weight:500;color:#e05c5c">44%</span> Vendidos</div>
+          <div style="font-size:10px;color:#5a6080;margin-top:4px">Lucro médio: <span style="color:#26c281">1.82%</span></div>
+          <div style="font-size:10px;color:#5a6080">Perda média: <span style="color:#e05c5c">-1.35%</span></div>
+        </div>
+      </div>
+      <button class="action-btn" onclick="sendPrompt(\'Mostra o mapa global de traders por ativo\')">Ver todos os ativos ↗</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><i class="ti ti-calculator" style="font-size:13px" aria-hidden="true"></i> simulador de cenários</div>
+      <div style="font-size:10px;color:#5a6080;margin-bottom:6px">BTCUSD · Analisando 10,000 cenários...</div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+        <svg width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="62% chance TP, 38% chance SL">
+          <circle cx="32" cy="32" r="24" fill="none" stroke="#26c281" stroke-width="10" stroke-dasharray="94 150.8" stroke-dashoffset="37.7" transform="rotate(-90 32 32)"/>
+          <circle cx="32" cy="32" r="24" fill="none" stroke="#e05c5c" stroke-width="10" stroke-dasharray="56.8 150.8" stroke-dashoffset="-56.2" transform="rotate(-90 32 32)"/>
+          <text x="32" y="29" text-anchor="middle" font-size="10" font-weight="500" fill="#e8ecf8">62%</text>
+          <text x="32" y="40" text-anchor="middle" font-size="8" fill="#5a6080">TP</text>
+        </svg>
+        <div style="flex:1">
+          <div class="sim-stat">Chance de TP <span class="sim-val" style="color:#26c281">62%</span></div>
+          <div class="sim-stat">Chance de SL <span class="sim-val" style="color:#e05c5c">38%</span></div>
+          <div class="sim-stat">RR Esperado <span class="sim-val">1.65</span></div>
+          <div class="sim-stat">Duração Média <span class="sim-val">3h 25m</span></div>
+        </div>
+      </div>
+      <button class="action-btn" onclick="sendPrompt(\'Corre o simulador de cenários completo para o BTCUSD\')">Ver cenários ↗</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><i class="ti ti-notebook" style="font-size:13px" aria-hidden="true"></i> diário de trading</div>
+      <div style="font-size:10px;color:#5a6080;margin-bottom:6px">Mai → Jun → Jul</div>
+      <div class="hm" id="hm"></div>
+      <div style="display:flex;justify-content:space-between;font-size:9px;color:#5a6080;margin-top:4px;margin-bottom:8px"><span>Menos</span><span>Mais</span></div>
+      <button class="action-btn" onclick="sendPrompt(\'Abre o meu diário de trading com todas as estatísticas\')">Ver Diário ↗</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><i class="ti ti-target" style="font-size:13px" aria-hidden="true"></i> top setups (30 dias)</div>
+      <div class="setup-row">
+        <span class="setup-n">1</span>
+        <span class="setup-name">Liquidity Sweep + BOS</span>
+        <span class="setup-wr" style="color:#26c281">68.7%</span>
+        <span class="setup-cnt">32</span>
+      </div>
+      <div class="setup-row">
+        <span class="setup-n">2</span>
+        <span class="setup-name">FVG + Order Block</span>
+        <span class="setup-wr" style="color:#26c281">64.2%</span>
+        <span class="setup-cnt">28</span>
+      </div>
+      <div class="setup-row">
+        <span class="setup-n">3</span>
+        <span class="setup-name">Breaker Block</span>
+        <span class="setup-wr" style="color:#26c281">61.1%</span>
+        <span class="setup-cnt">22</span>
+      </div>
+      <div class="setup-row">
+        <span class="setup-n">4</span>
+        <span class="setup-name">Trend Continuation</span>
+        <span class="setup-wr" style="color:#d4a017">57.8%</span>
+        <span class="setup-cnt">19</span>
+      </div>
+      <button class="action-btn" onclick="sendPrompt(\'Mostra todos os meus setups com estatísticas detalhadas\')">Ver Todos ↗</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><i class="ti ti-copy" style="font-size:13px" aria-hidden="true"></i> copy trading · top traders</div>
+      <div class="trader-row">
+        <div class="trader-av" style="background:#0d2040;color:#60a5fa">AT</div>
+        <div style="flex:1"><div class="trader-name">AlphaTrader</div><div class="trader-risk">Risco 2/10</div></div>
+        <div style="text-align:right"><div style="font-size:12px;font-weight:500;color:#26c281">+27.8%</div><button class="follow-btn">Seguir</button></div>
+      </div>
+      <div class="trader-row">
+        <div class="trader-av" style="background:#0d2e1e;color:#26c281">KL</div>
+        <div style="flex:1"><div class="trader-name">KingLiquidity</div><div class="trader-risk">Risco 3/10</div></div>
+        <div style="text-align:right"><div style="font-size:12px;font-weight:500;color:#26c281">+19.3%</div><button class="follow-btn">Seguir</button></div>
+      </div>
+      <div class="trader-row">
+        <div class="trader-av" style="background:#2e1e0d;color:#d4a017">MH</div>
+        <div style="flex:1"><div class="trader-name">MacroHunter</div><div class="trader-risk">Risco 2/10</div></div>
+        <div style="text-align:right"><div style="font-size:12px;font-weight:500;color:#26c281">+15.7%</div><button class="follow-btn">Seguir</button></div>
+      </div>
+      <button class="action-btn" onclick="sendPrompt(\'Mostra todos os traders disponíveis para copy trading\')">Ver Todos os Traders ↗</button>
+    </div>
+
+    <div class="card" style="grid-column:span 2">
+      <div class="card-title"><i class="ti ti-messages" style="font-size:13px" aria-hidden="true"></i> sala de trading <span class="badge-s" style="margin-left:auto">1,248 online</span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+        <div>
+          <div class="chat-msg">
+            <div class="chat-av" style="background:#0d2040;color:#60a5fa">AT</div>
+            <div><div class="chat-name">AlphaTrader <span style="color:#5a6080;font-weight:400">12:45</span></div><div class="chat-text">GOLD a reagir na zona de liquidez como esperado!</div></div>
+          </div>
+        </div>
+        <div>
+          <div class="chat-msg">
+            <div class="chat-av" style="background:#2e1e0d;color:#d4a017">IT</div>
+            <div><div class="chat-name">Inês Traders <span style="color:#5a6080;font-weight:400">12:45</span></div><div class="chat-text">Concordo! Estou a ver estruturas de reversão</div></div>
+          </div>
+        </div>
+        <div>
+          <div class="chat-msg">
+            <div class="chat-av" style="background:#0d2e1e;color:#26c281">MM</div>
+            <div><div class="chat-name">MarketMaster <span style="color:#5a6080;font-weight:400">12:46</span></div><div class="chat-text">Cuidado com a notícia às 14:30</div></div>
+          </div>
+        </div>
+      </div>
+      <button class="action-btn" style="margin-top:6px" onclick="sendPrompt(\'Abre a sala de trading completa do Hermes\')">Entrar na Sala ↗</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><i class="ti ti-chart-bar" style="font-size:13px" aria-hidden="true"></i> performance (30 dias)</div>
+      <div style="font-size:22px;font-weight:500;color:#26c281;margin-bottom:8px">+2,352.54€</div>
+      <div class="perf-row"><span class="perf-lbl">Win Rate</span><span class="perf-val" style="color:#26c281">62.4%</span></div>
+      <div class="perf-row"><span class="perf-lbl">Profit Factor</span><span class="perf-val" style="color:#e8ecf8">1.85</span></div>
+      <div class="perf-row"><span class="perf-lbl">Trades</span><span class="perf-val" style="color:#e8ecf8">128</span></div>
+      <div class="spark" id="spark"></div>
+      <button class="action-btn" onclick="sendPrompt(\'Mostra o meu diário de performance completo dos últimos 30 dias\')">Ver Diário Completo ↗</button>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<script>
